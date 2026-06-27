@@ -69,7 +69,7 @@ jobs:
           python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies
 
       - name: Run ruff
-        run: python -m ruff check .
+        run: python -m ruff check . --extend-exclude external
 
       - name: Run tests
         run: PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests

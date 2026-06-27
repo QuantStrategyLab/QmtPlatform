@@ -42,6 +42,19 @@ jobs:
           done
           echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve CnEquitySnapshotPipelines ref
+        id: cn-equity-snapshot-pipelines-ref
+        run: |
+          set -euo pipefail
+          ref="main"
+          for candidate in "${GITHUB_HEAD_REF:-}" "${GITHUB_BASE_REF:-}"; do
+            if [ -n "$candidate" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/CnEquitySnapshotPipelines.git "$candidate" >/dev/null 2>&1; then
+              ref="$candidate"
+              break
+            fi
+          done
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout QuantPlatformKit
         uses: actions/checkout@v6
         with:
@@ -56,6 +69,13 @@ jobs:
           ref: ${{ steps.cn-equity-strategies-ref.outputs.ref }}
           path: external/CnEquityStrategies
 
+      - name: Checkout CnEquitySnapshotPipelines
+        uses: actions/checkout@v6
+        with:
+          repository: QuantStrategyLab/CnEquitySnapshotPipelines
+          ref: ${{ steps.cn-equity-snapshot-pipelines-ref.outputs.ref }}
+          path: external/CnEquitySnapshotPipelines
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -66,7 +86,7 @@ jobs:
           set -euo pipefail
           python -m pip install --upgrade pip
           python -m pip install -e '.[test]' ruff
-          python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies
+          python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies -e external/CnEquitySnapshotPipelines
 
       - name: Run ruff
         run: python -m ruff check . --extend-exclude external

@@ -13,6 +13,8 @@ Current scope is **dry-run first**: evaluate strategy targets and preview orders
 
 ## Quick start
 
+### ETF tactical rotation (market history)
+
 ```bash
 python3 -m pip install -e '.[test]'
 python3 -m pip install --no-deps -e ../QuantPlatformKit ../CnEquityStrategies
@@ -26,6 +28,29 @@ curl http://127.0.0.1:8080/probe
 curl http://127.0.0.1:8080/dry-run
 ```
 
+### Dividend quality snapshot (feature snapshot)
+
+```bash
+python3 -m pip install --no-deps -e ../CnEquitySnapshotPipelines
+
+# Regenerate fixtures (uses sample factor CSV; sets as_of to today)
+python3 scripts/build_fixtures.py
+
+export STRATEGY_PROFILE=cn_dividend_quality_snapshot
+export QMT_DRY_RUN_ONLY=true
+export QMT_FEATURE_SNAPSHOT_PATH=data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv
+export QMT_FEATURE_SNAPSHOT_MANIFEST_PATH=data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv.manifest.json
+
+python3 main.py
+curl http://127.0.0.1:8080/dry-run
+```
+
+End-to-end smoke (stage/build/run):
+
+```bash
+python3 scripts/smoke_cn_dividend_quality_dry_run_e2e.py
+```
+
 ## Environment variables
 
 | Variable | Default | Description |
@@ -34,6 +59,7 @@ curl http://127.0.0.1:8080/dry-run
 | `STRATEGY_PROFILE` | required | Strategy profile id |
 | `QMT_MARKET_HISTORY_PATH` | — | CSV with `date,symbol,close` for direct strategies |
 | `QMT_FEATURE_SNAPSHOT_PATH` | — | Snapshot CSV for feature-snapshot strategies |
+| `QMT_FEATURE_SNAPSHOT_MANIFEST_PATH` | — | Snapshot manifest JSON (required for dividend quality) |
 | `RUNTIME_TARGET_JSON` | — | Optional runtime target override from QuantRuntimeSettings |
 
 See `.env.example` and `CnEquityStrategies/docs/platform_integration.md`.

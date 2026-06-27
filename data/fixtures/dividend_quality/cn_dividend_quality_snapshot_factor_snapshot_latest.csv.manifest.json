@@ -1,0 +1,14 @@
+{
+  "config_name": "cn_dividend_quality_snapshot",
+  "config_path": null,
+  "config_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "contract_version": "cn_dividend_quality_snapshot.factor_snapshot.v1",
+  "generated_at": "2026-06-27T15:03:17.043212+00:00",
+  "manifest_type": "feature_snapshot",
+  "row_count": 4,
+  "snapshot_as_of": "2026-06-27",
+  "snapshot_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv",
+  "snapshot_sha256": "ba00a43b18ca204a53f6f657774b2964bc196a6727f329d0f9dd242f36d1cedd",
+  "source_project": "CnEquitySnapshotPipelines",
+  "strategy_profile": "cn_dividend_quality_snapshot"
+}

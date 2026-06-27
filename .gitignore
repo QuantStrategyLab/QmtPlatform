@@ -6,4 +6,6 @@ __pycache__/
 dist/
 build/
 .DS_Store
-data/
+data/*
+!data/fixtures/
+!data/fixtures/**

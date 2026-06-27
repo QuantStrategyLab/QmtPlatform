@@ -1,0 +1,45 @@
+{
+  "contract_version": "cn_dividend_quality_snapshot.factor_snapshot.v1",
+  "diagnostics": {
+    "actionable": true,
+    "breadth_ratio": 1.0,
+    "candidate_count": 3,
+    "managed_symbols": [
+      "600519",
+      "601088",
+      "000001",
+      "510300"
+    ],
+    "realized_stock_weight": 0.24,
+    "regime": "risk_on",
+    "safe_haven_weight": 0.76,
+    "selected_count": 3,
+    "selected_symbols": [
+      "601088",
+      "600519",
+      "000001"
+    ],
+    "signal_source": "factor_snapshot",
+    "snapshot_contract_version": "cn_dividend_quality_snapshot.factor_snapshot.v1",
+    "status_icon": "🇨🇳",
+    "target_stock_weight": 1.0,
+    "target_weights": {
+      "000001": 0.08,
+      "510300": 0.76,
+      "600519": 0.08,
+      "601088": 0.08
+    }
+  },
+  "display_name": "CN Dividend Quality Snapshot",
+  "generated_at": "2026-06-27T15:03:17.068089+00:00",
+  "manifest_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv.manifest.json",
+  "ranking_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_ranking_latest.csv",
+  "release_status": "ready",
+  "row_count": 4,
+  "signal_description": "cn dividend quality regime=risk_on breadth=100.0% target_stock=100.0% selected=3 top=601088(0.44), 600519(0.11), 000001(-0.55)",
+  "snapshot_as_of": "2026-06-27",
+  "snapshot_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv",
+  "source_project": "CnEquitySnapshotPipelines",
+  "status_description": "regime=risk_on | breadth=100.0% | target_stock=100.0%",
+  "strategy_profile": "cn_dividend_quality_snapshot"
+}

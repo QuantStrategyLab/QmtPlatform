@@ -14,7 +14,7 @@ dependencies = [
   "flask>=3.0",
   "pandas>=2.0",
   "quant-platform-kit @ git+https://github.com/QuantStrategyLab/QuantPlatformKit.git@d18fe32b57a0a8bb746bebf6f11465dd68107eae",
-  "cn-equity-strategies @ git+https://github.com/QuantStrategyLab/CnEquityStrategies.git@0440651539dad4bb79c21bb5b965e97daec837de",
+  "cn-equity-strategies @ git+https://github.com/QuantStrategyLab/CnEquityStrategies.git@3fe9cd365ecb91956e8180a7acc2f37d0965270c",
 ]
 
 [project.optional-dependencies]

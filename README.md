@@ -58,6 +58,7 @@ End-to-end smoke (stage/build/run):
 
 ```bash
 python3 scripts/smoke_cn_dividend_quality_dry_run_e2e.py
+python3 scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
 ```
 
 ## Environment variables

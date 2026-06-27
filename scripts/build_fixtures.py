@@ -20,7 +20,14 @@ SAMPLE_FACTOR = (
 )
 
 
-def _build_market_history(path: Path) -> None:
+def _build_market_history(path: Path, *, use_akshare: bool) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if use_akshare:
+        from cn_equity_snapshot_pipelines.akshare_market_history import write_market_history_csv
+
+        write_market_history_csv(output_path=path)
+        return
+
     from cn_equity_strategies.strategies.cn_index_etf_tactical_rotation import extract_managed_symbols
 
     dates = pd.bdate_range("2024-01-02", periods=320)
@@ -47,6 +54,19 @@ def _build_market_history(path: Path) -> None:
             rows.append({"date": date, "symbol": symbol, "close": close})
     path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(path, index=False)
+
+
+def _build_dividend_factor_csv(*, output_path: Path, as_of: str, use_akshare: bool, sample_factor: Path) -> Path:
+    if use_akshare:
+        from cn_equity_snapshot_pipelines.akshare_staging import write_staging_factor_snapshot
+
+        write_staging_factor_snapshot(
+            output_path=output_path,
+            sample_fallback_path=sample_factor,
+            as_of=as_of,
+        )
+        return output_path
+    return sample_factor
 
 
 def _build_dividend_snapshot(*, as_of: str, sample_factor: Path, output_dir: Path) -> None:
@@ -77,12 +97,23 @@ def main(argv: list[str] | None = None) -> int:
         default=SAMPLE_FACTOR,
         help="Factor CSV used to build the dividend quality snapshot fixture.",
     )
+    parser.add_argument(
+        "--use-akshare",
+        action="store_true",
+        help="Fetch real ETF market history and dividend factor fields via AkShare when available.",
+    )
     args = parser.parse_args(argv)
 
-    _build_market_history(MARKET_HISTORY)
-    if not args.sample_factor.exists():
+    _build_market_history(MARKET_HISTORY, use_akshare=args.use_akshare)
+    if not args.sample_factor.exists() and not args.use_akshare:
         raise FileNotFoundError(f"sample factor CSV not found: {args.sample_factor}")
-    _build_dividend_snapshot(as_of=args.as_of, sample_factor=args.sample_factor, output_dir=DIVIDEND_DIR)
+    factor_path = _build_dividend_factor_csv(
+        output_path=FIXTURES / "staging" / "dividend_quality" / "factor_snapshot.latest.csv",
+        as_of=args.as_of,
+        use_akshare=args.use_akshare,
+        sample_factor=args.sample_factor,
+    )
+    _build_dividend_snapshot(as_of=args.as_of, sample_factor=factor_path, output_dir=DIVIDEND_DIR)
 
     print(f"market_history={MARKET_HISTORY}")
     print(f"dividend_snapshot_dir={DIVIDEND_DIR}")

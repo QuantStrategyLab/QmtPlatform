@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Resolve QuantPlatformKit ref
+        id: quant-platform-kit-ref
+        run: |
+          set -euo pipefail
+          ref="main"
+          for candidate in "${GITHUB_HEAD_REF:-}" "${GITHUB_BASE_REF:-}"; do
+            if [ -n "$candidate" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/QuantPlatformKit.git "$candidate" >/dev/null 2>&1; then
+              ref="$candidate"
+              break
+            fi
+          done
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve CnEquityStrategies ref
+        id: cn-equity-strategies-ref
+        run: |
+          set -euo pipefail
+          ref="main"
+          for candidate in "${GITHUB_HEAD_REF:-}" "${GITHUB_BASE_REF:-}"; do
+            if [ -n "$candidate" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/CnEquityStrategies.git "$candidate" >/dev/null 2>&1; then
+              ref="$candidate"
+              break
+            fi
+          done
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout QuantPlatformKit
+        uses: actions/checkout@v6
+        with:
+          repository: QuantStrategyLab/QuantPlatformKit
+          ref: ${{ steps.quant-platform-kit-ref.outputs.ref }}
+          path: external/QuantPlatformKit
+
+      - name: Checkout CnEquityStrategies
+        uses: actions/checkout@v6
+        with:
+          repository: QuantStrategyLab/CnEquityStrategies
+          ref: ${{ steps.cn-equity-strategies-ref.outputs.ref }}
+          path: external/CnEquityStrategies
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[test]' ruff
+          python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies
+
+      - name: Run ruff
+        run: python -m ruff check .
+
+      - name: Run tests
+        run: PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests

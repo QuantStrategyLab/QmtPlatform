@@ -28,30 +28,32 @@ def _build_market_history(path: Path, *, use_akshare: bool) -> None:
         write_market_history_csv(output_path=path)
         return
 
-    from cn_equity_strategies.strategies.cn_index_etf_tactical_rotation import extract_managed_symbols
+    from cn_equity_strategies.strategies.cn_industry_etf_rotation import extract_managed_symbols
 
     dates = pd.bdate_range("2024-01-02", periods=320)
     rates = {
-        "510300": 1.0002,
-        "510500": 1.0001,
+        "159819": 1.0010,
+        "159995": 1.0009,
+        "512760": 1.0008,
+        "159994": 1.0007,
+        "159852": 1.0006,
+        "512170": 1.0004,
+        "515030": 1.0009,
+        "159792": 1.0005,
+        "512800": 1.0003,
+        "512690": 1.0002,
+        "159928": 1.0001,
         "159915": 0.9998,
         "588000": 1.0000,
         "512100": 1.0003,
-        "512170": 1.0004,
-        "515030": 1.0009,
-        "512760": 1.0008,
-        "518880": 1.0005,
-        "513100": 1.0007,
-        "511880": 1.00001,
-        "511260": 1.00002,
     }
     rows: list[dict[str, object]] = []
     for symbol in extract_managed_symbols():
         price = 20.0
         for idx, date in enumerate(dates):
-            price *= rates[symbol]
+            price *= rates.get(symbol, 1.0004)
             close = price * (1.0 + 0.04 * ((idx % 5) - 2) / 5)
-            rows.append({"date": date, "symbol": symbol, "close": close})
+            rows.append({"date": date, "symbol": symbol, "close": close, "volume": 1_000_000.0})
     path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(path, index=False)
 

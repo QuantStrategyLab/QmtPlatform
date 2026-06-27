@@ -8,24 +8,33 @@ Current scope is **dry-run first**: evaluate strategy targets and preview orders
 
 | Profile | Input mode |
 |---|---|
-| `cn_index_etf_tactical_rotation` | `market_history` |
+| `cn_industry_etf_rotation` | `market_history` (**主轨，runtime_enabled**) |
 | `cn_dividend_quality_snapshot` | `feature_snapshot` (requires snapshot path) |
+| `cn_index_etf_tactical_rotation` | `market_history` (legacy / research_backtest_only) |
 
 ## Quick start
 
-### ETF tactical rotation (market history)
+### Industry ETF rotation (market history, primary)
 
 ```bash
 python3 -m pip install -e '.[test]'
 python3 -m pip install --no-deps -e ../QuantPlatformKit ../CnEquityStrategies
 
-export STRATEGY_PROFILE=cn_index_etf_tactical_rotation
+export STRATEGY_PROFILE=cn_industry_etf_rotation
 export QMT_DRY_RUN_ONLY=true
 export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
 
 python3 main.py
 curl http://127.0.0.1:8080/probe
 curl http://127.0.0.1:8080/dry-run
+```
+
+### Legacy index ETF tactical rotation (research only)
+
+```bash
+export STRATEGY_PROFILE=cn_index_etf_tactical_rotation
+export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
+python3 main.py
 ```
 
 ### Dividend quality snapshot (feature snapshot)

@@ -31,7 +31,7 @@
     }
   },
   "display_name": "CN Dividend Quality Snapshot",
-  "generated_at": "2026-06-27T15:03:17.068089+00:00",
+  "generated_at": "2026-06-27T16:20:38.124005+00:00",
   "manifest_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv.manifest.json",
   "ranking_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_ranking_latest.csv",
   "release_status": "ready",

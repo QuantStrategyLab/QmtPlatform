@@ -3,7 +3,7 @@
   "config_path": null,
   "config_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "contract_version": "cn_dividend_quality_snapshot.factor_snapshot.v1",
-  "generated_at": "2026-06-27T15:03:17.043212+00:00",
+  "generated_at": "2026-06-27T16:20:38.097163+00:00",
   "manifest_type": "feature_snapshot",
   "row_count": 4,
   "snapshot_as_of": "2026-06-27",

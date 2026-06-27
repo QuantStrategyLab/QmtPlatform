@@ -9,6 +9,7 @@ Current scope is **dry-run first**: evaluate strategy targets and preview orders
 | Profile | Input mode |
 |---|---|
 | `cn_industry_etf_rotation` | `market_history` (**主轨，runtime_enabled**) |
+| `cn_industry_etf_rotation_aggressive` | `market_history` (**optional target，vol25%**) |
 | `cn_dividend_quality_snapshot` | `feature_snapshot` (requires snapshot path) |
 | `cn_index_etf_tactical_rotation` | `market_history` (legacy / research_backtest_only) |
 
@@ -28,6 +29,19 @@ python3 main.py
 curl http://127.0.0.1:8080/probe
 curl http://127.0.0.1:8080/dry-run
 ```
+
+### Industry ETF rotation aggressive (optional second target, vol25%)
+
+```bash
+export STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive
+export QMT_DRY_RUN_ONLY=true
+export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
+
+python3 main.py
+curl http://127.0.0.1:8080/dry-run
+```
+
+Runtime target example: `QuantRuntimeSettings/examples/targets/qmt/industry_etf_aggressive_dry_run.example.json`
 
 ### Legacy index ETF tactical rotation (research only)
 
@@ -59,6 +73,7 @@ End-to-end smoke (stage/build/run):
 ```bash
 python3 scripts/smoke_cn_dividend_quality_dry_run_e2e.py
 python3 scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
+python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 ```
 
 ## Environment variables

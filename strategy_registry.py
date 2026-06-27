@@ -16,6 +16,7 @@ from quant_platform_kit.common.strategies import (
 from cn_equity_strategies import (
     CN_EQUITY_DOMAIN,
     get_platform_runtime_adapter,
+    get_qmt_rollout_allowlist,
     get_runtime_enabled_profiles,
     get_strategy_catalog,
 )
@@ -27,7 +28,7 @@ PLATFORM_SUPPORTED_DOMAINS: dict[str, frozenset[str]] = {
 }
 
 STRATEGY_CATALOG = get_strategy_catalog()
-QMT_ROLLOUT_ALLOWLIST = get_runtime_enabled_profiles()
+QMT_ROLLOUT_ALLOWLIST = get_qmt_rollout_allowlist()
 PLATFORM_CAPABILITY_MATRIX = PlatformCapabilityMatrix(
     platform_id=QMT_PLATFORM,
     supported_domains=PLATFORM_SUPPORTED_DOMAINS[QMT_PLATFORM],

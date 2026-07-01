@@ -17,7 +17,6 @@ from cn_equity_strategies import (
     CN_EQUITY_DOMAIN,
     get_platform_runtime_adapter,
     get_qmt_rollout_allowlist,
-    get_runtime_enabled_profiles,
     get_strategy_catalog,
 )
 

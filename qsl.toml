@@ -3,6 +3,7 @@ repo = "QmtPlatform"
 tier = "runtime-platform"
 ring = 3
 allow_legacy = false
+enforce_bundle = false
 
 [qsl.requires]
 quant_platform_kit = "e86554b"

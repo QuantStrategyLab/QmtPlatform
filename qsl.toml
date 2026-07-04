@@ -7,7 +7,7 @@ enforce_bundle = false
 
 [qsl.requires]
 quant_platform_kit = "7032cde4547e7ec59af15df8935d142461a77051"
-cn_equity_strategies = "c6d680d6d2690fe6ff77872355719751c021f9a0"
+cn_equity_strategies = "357dba7e8896a7f488a484d4a3eea33894708ab9"
 
 [qsl.compat]
 bundle = "2026.07.1"

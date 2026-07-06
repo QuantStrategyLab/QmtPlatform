@@ -1,5 +1,14 @@
 # QmtPlatform
 
+
+## QSL architecture role
+
+- **Layer**: `runtime-platform`.
+- **Responsibility**: QMT / miniQMT A-share execution runtime.
+- **Owns**: QMT runtime controls and A-share platform integration.
+- **Consumes**: CnEquityStrategies, CnEquitySnapshotPipelines artifacts, QuantPlatformKit, QuantRuntimeSettings.
+- **Must not**: own strategy research logic or publish snapshot artifacts.
+
 A-share quant platform layer for **miniQMT / QMT**, built on `QuantPlatformKit` and `CnEquityStrategies`.
 
 Current scope is **dry-run first**: evaluate strategy targets and preview orders without submitting to the broker.

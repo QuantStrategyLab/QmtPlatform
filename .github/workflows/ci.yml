@@ -21,9 +21,6 @@ jobs:
         run: |
           set -euo pipefail
           ref="$(grep -Eo 'QuantPlatformKit\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
-          if [ -n "${GITHUB_HEAD_REF:-}" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/QuantPlatformKit.git "${GITHUB_HEAD_REF}" >/dev/null 2>&1; then
-            ref="${GITHUB_HEAD_REF}"
-          fi
           echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve CnEquityStrategies ref
@@ -31,9 +28,6 @@ jobs:
         run: |
           set -euo pipefail
           ref="$(grep -Eo 'CnEquityStrategies\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
-          if [ -n "${GITHUB_HEAD_REF:-}" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/CnEquityStrategies.git "${GITHUB_HEAD_REF}" >/dev/null 2>&1; then
-            ref="${GITHUB_HEAD_REF}"
-          fi
           echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve CnEquitySnapshotPipelines ref

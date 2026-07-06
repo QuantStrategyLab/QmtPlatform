@@ -20,26 +20,20 @@ jobs:
         id: quant-platform-kit-ref
         run: |
           set -euo pipefail
-          ref="main"
-          for candidate in "${GITHUB_HEAD_REF:-}" "${GITHUB_BASE_REF:-}"; do
-            if [ -n "$candidate" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/QuantPlatformKit.git "$candidate" >/dev/null 2>&1; then
-              ref="$candidate"
-              break
-            fi
-          done
+          ref="$(grep -Eo 'QuantPlatformKit\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
+          if [ -n "${GITHUB_HEAD_REF:-}" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/QuantPlatformKit.git "${GITHUB_HEAD_REF}" >/dev/null 2>&1; then
+            ref="${GITHUB_HEAD_REF}"
+          fi
           echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve CnEquityStrategies ref
         id: cn-equity-strategies-ref
         run: |
           set -euo pipefail
-          ref="main"
-          for candidate in "${GITHUB_HEAD_REF:-}" "${GITHUB_BASE_REF:-}"; do
-            if [ -n "$candidate" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/CnEquityStrategies.git "$candidate" >/dev/null 2>&1; then
-              ref="$candidate"
-              break
-            fi
-          done
+          ref="$(grep -Eo 'CnEquityStrategies\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
+          if [ -n "${GITHUB_HEAD_REF:-}" ] && git ls-remote --exit-code --heads https://github.com/QuantStrategyLab/CnEquityStrategies.git "${GITHUB_HEAD_REF}" >/dev/null 2>&1; then
+            ref="${GITHUB_HEAD_REF}"
+          fi
           echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve CnEquitySnapshotPipelines ref

@@ -1,5 +1,14 @@
 # QmtPlatform
 
+
+## QSL 架构角色
+
+- **层级**：`执行平台`。
+- **职责**：QMT / miniQMT A 股执行运行时。
+- **事实源/归属**：QMT runtime 控制和 A 股平台集成。
+- **消费对象**：CnEquityStrategies、CnEquitySnapshotPipelines artifacts、QuantPlatformKit、QuantRuntimeSettings。
+- **禁止事项**：承载策略研究逻辑或发布 snapshot artifacts。
+
 A 股量化平台层，基于 `QuantPlatformKit` 和 `CnEquityStrategies` 构建，对接 **miniQMT / QMT**。
 
 当前范围为**仅干跑**：评估策略目标并预览订单，不向券商提交实盘。

@@ -3,7 +3,6 @@ from __future__ import annotations
 import pytest
 
 from cn_equity_strategies.catalog import (
-    CN_DIVIDEND_QUALITY_SNAPSHOT_PROFILE,
     CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE,
     CN_INDUSTRY_ETF_ROTATION_PROFILE,
 )
@@ -13,9 +12,12 @@ from strategy_registry import QMT_PLATFORM, PLATFORM_POLICY, get_enabled_profile
 
 def test_qmt_enabled_profiles_include_primary_runtime_strategies():
     profiles = get_enabled_profiles_for_platform(QMT_PLATFORM, policy=PLATFORM_POLICY)
-    assert CN_INDUSTRY_ETF_ROTATION_PROFILE in profiles
-    assert CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE in profiles
-    assert CN_DIVIDEND_QUALITY_SNAPSHOT_PROFILE in profiles
+    assert profiles == frozenset(
+        {
+            CN_INDUSTRY_ETF_ROTATION_PROFILE,
+            CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE,
+        }
+    )
 
 
 def test_load_platform_runtime_settings_from_env(monkeypatch: pytest.MonkeyPatch, market_history_csv: str):

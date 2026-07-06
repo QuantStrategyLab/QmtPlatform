@@ -3,14 +3,11 @@ repo = "QmtPlatform"
 tier = "runtime-platform"
 ring = 3
 allow_legacy = false
-enforce_bundle = false
-owner = "runtime-platform"
-expires_at = "2026-09-30"
-next_action = "finish dependency pin convergence and restore enforce_bundle=true"
+enforce_bundle = true
 
 [qsl.requires]
 quant_platform_kit = "37c81901160c5b31127a27dba1c63944933fb6bf"
-cn_equity_strategies = "8dfadcf8a4dc6cc516f27a4013248474603d8ce2"
+cn_equity_strategies = "73844e92a8570a61e5a9dc6c245809d0b27b89bc"
 
 [qsl.compat]
 bundle = "2026.07.2"

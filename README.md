@@ -6,21 +6,21 @@
 - **Layer**: `runtime-platform`.
 - **Responsibility**: QMT / miniQMT A-share execution runtime.
 - **Owns**: QMT runtime controls and A-share platform integration.
-- **Consumes**: CnEquityStrategies, CnEquitySnapshotPipelines artifacts, QuantPlatformKit, QuantRuntimeSettings.
+- **Consumes**: CnEquityStrategies, QuantPlatformKit, QuantRuntimeSettings, market-history inputs.
 - **Must not**: own strategy research logic or publish snapshot artifacts.
 
 A-share quant platform layer for **miniQMT / QMT**, built on `QuantPlatformKit` and `CnEquityStrategies`.
 
 Current scope is **dry-run first**: evaluate strategy targets and preview orders without submitting to the broker.
 
-## Supported profiles (P0)
+## Supported dry-run profiles
 
 | Profile | Input mode |
 |---|---|
 | `cn_industry_etf_rotation` | `market_history` (**主轨，runtime_enabled**) |
-| `cn_industry_etf_rotation_aggressive` | `market_history` (**optional target，vol25%**) |
-| `cn_dividend_quality_snapshot` | `feature_snapshot` (requires snapshot path) |
-| `cn_index_etf_tactical_rotation` | `market_history` (legacy / research_backtest_only) |
+| `cn_industry_etf_rotation_aggressive` | `market_history` (**optional target，live_candidate**) |
+
+Research-only profiles such as `cn_dividend_quality_snapshot` and `cn_index_etf_tactical_rotation` are intentionally rejected by QMT runtime settings until they are promoted in `CnEquityStrategies`.
 
 ## Quick start
 
@@ -34,6 +34,7 @@ export STRATEGY_PROFILE=cn_industry_etf_rotation
 export QMT_DRY_RUN_ONLY=true
 export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
 
+python3 scripts/preflight_qmt_runtime.py
 python3 main.py
 curl http://127.0.0.1:8080/probe
 curl http://127.0.0.1:8080/dry-run
@@ -52,35 +53,9 @@ curl http://127.0.0.1:8080/dry-run
 
 Runtime target example: `QuantRuntimeSettings/examples/targets/qmt/industry_etf_aggressive_dry_run.example.json`
 
-### Legacy index ETF tactical rotation (research only)
-
-```bash
-export STRATEGY_PROFILE=cn_index_etf_tactical_rotation
-export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
-python3 main.py
-```
-
-### Dividend quality snapshot (feature snapshot)
-
-```bash
-python3 -m pip install --no-deps -e ../CnEquitySnapshotPipelines
-
-# Regenerate fixtures (uses sample factor CSV; sets as_of to today)
-python3 scripts/build_fixtures.py
-
-export STRATEGY_PROFILE=cn_dividend_quality_snapshot
-export QMT_DRY_RUN_ONLY=true
-export QMT_FEATURE_SNAPSHOT_PATH=data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv
-export QMT_FEATURE_SNAPSHOT_MANIFEST_PATH=data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv.manifest.json
-
-python3 main.py
-curl http://127.0.0.1:8080/dry-run
-```
-
 End-to-end smoke (stage/build/run):
 
 ```bash
-python3 scripts/smoke_cn_dividend_quality_dry_run_e2e.py
 python3 scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
 python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 ```
@@ -90,13 +65,11 @@ python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 | Variable | Default | Description |
 |---|---|---|
 | `QMT_DRY_RUN_ONLY` | `true` | When true, never submit live orders |
-| `STRATEGY_PROFILE` | required | Strategy profile id |
+| `STRATEGY_PROFILE` | required | QMT-enabled strategy profile id |
 | `QMT_MARKET_HISTORY_PATH` | — | CSV with `date,symbol,close` for direct strategies |
-| `QMT_FEATURE_SNAPSHOT_PATH` | — | Snapshot CSV for feature-snapshot strategies |
-| `QMT_FEATURE_SNAPSHOT_MANIFEST_PATH` | — | Snapshot manifest JSON (required for dividend quality) |
 | `RUNTIME_TARGET_JSON` | — | Optional runtime target override from QuantRuntimeSettings |
 
-See `.env.example` and `CnEquityStrategies/docs/platform_integration.md`.
+Use `.env.example` as the dry-run configuration template. Run `python3 scripts/preflight_qmt_runtime.py` before starting the service; it validates the selected profile and required input paths without touching any live account credentials.
 
 ## HTTP endpoints
 

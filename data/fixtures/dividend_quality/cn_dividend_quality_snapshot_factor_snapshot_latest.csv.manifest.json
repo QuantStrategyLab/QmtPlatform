@@ -7,7 +7,7 @@
   "manifest_type": "feature_snapshot",
   "row_count": 4,
   "snapshot_as_of": "2026-06-27",
-  "snapshot_path": "/Users/lisiyi/Projects/QmtPlatform/data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv",
+  "snapshot_path": "data/fixtures/dividend_quality/cn_dividend_quality_snapshot_factor_snapshot_latest.csv",
   "snapshot_sha256": "ba00a43b18ca204a53f6f657774b2964bc196a6727f329d0f9dd242f36d1cedd",
   "source_project": "CnEquitySnapshotPipelines",
   "strategy_profile": "cn_dividend_quality_snapshot"

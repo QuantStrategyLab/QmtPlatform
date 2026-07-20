@@ -47,10 +47,20 @@ class LoadedStrategyRuntime:
         runtime_config = dict(self.runtime_config)
         apply_runtime_policy_to_runtime_config(runtime_config, self.runtime_adapter)
 
+        stamped_inputs = dict(available_inputs)
+        snapshot = stamped_inputs.get("portfolio_snapshot")
+        if snapshot is not None:
+            from quant_platform_kit.strategy_lifecycle.live_equity import stamp_consecutive_losses_on_snapshot
+
+            stamped_inputs["portfolio_snapshot"] = stamp_consecutive_losses_on_snapshot(
+                snapshot,
+                strategy_profile=self.profile,
+            )
+
         if _FEATURE_SNAPSHOT_INPUT in frozenset(self.entrypoint.manifest.required_inputs):
             return self._evaluate_feature_snapshot_strategy(
                 runtime_config=runtime_config,
-                available_inputs=available_inputs,
+                available_inputs=stamped_inputs,
             )
 
         as_of = datetime.now(timezone.utc)
@@ -58,7 +68,7 @@ class LoadedStrategyRuntime:
             entrypoint=self.entrypoint,
             runtime_adapter=self.runtime_adapter,
             as_of=as_of,
-            available_inputs=dict(available_inputs),
+            available_inputs=stamped_inputs,
             runtime_config=runtime_config,
         )
         decision = self.entrypoint.evaluate(ctx)

@@ -1,0 +1,13 @@
+[qsl]
+repo = "QmtPlatform"
+tier = "runtime"
+upgrade_ring = "ring_d"
+allow_legacy = false
+enforce_bundle = true
+
+[qsl.requires]
+quant_platform_kit = "69a0256934d081b5ef309a885384b9eb9f62cf90"
+cn_equity_strategies = "12c0cd4801060fcb2f9452ffd9a7f48df446ddd0"
+
+[qsl.compat]
+bundle = "2026.07.3"

@@ -28,4 +28,7 @@ def test_dry_run_endpoint(client):
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["status"] == "ok"
-    assert payload["target_weights"]
+    assert payload["target_weights"] == {}
+    assert payload["order_previews"] == []
+    assert payload["risk_flags"] == ["rejected:concentration"]
+    assert payload["diagnostics"]["risk_gate"] == "REJECT"

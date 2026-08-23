@@ -32,7 +32,10 @@ def test_load_platform_runtime_settings_from_env(monkeypatch: pytest.MonkeyPatch
     assert settings.market_history_path == market_history_csv
 
 
-def test_dry_run_cycle_returns_target_weights(monkeypatch: pytest.MonkeyPatch, market_history_csv: str):
+def test_dry_run_cycle_fails_closed_on_concentrated_target(
+    monkeypatch: pytest.MonkeyPatch,
+    market_history_csv: str,
+):
     monkeypatch.setenv("STRATEGY_PROFILE", CN_INDUSTRY_ETF_ROTATION_PROFILE)
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
     monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
@@ -55,12 +58,14 @@ def test_dry_run_cycle_returns_target_weights(monkeypatch: pytest.MonkeyPatch, m
     )
     assert report["status"] == "ok"
     assert report["strategy_profile"] == CN_INDUSTRY_ETF_ROTATION_PROFILE
-    assert report["target_weights"]
-    assert report["order_previews"]
+    assert report["target_weights"] == {}
+    assert report["order_previews"] == []
+    assert report["risk_flags"] == ["rejected:concentration"]
+    assert report["diagnostics"]["risk_gate"] == "REJECT"
     assert report["dry_run_only"] is True
 
 
-def test_dry_run_cycle_supports_aggressive_industry_profile(
+def test_aggressive_industry_profile_fails_closed_on_concentration(
     monkeypatch: pytest.MonkeyPatch,
     market_history_csv: str,
 ):
@@ -86,4 +91,7 @@ def test_dry_run_cycle_supports_aggressive_industry_profile(
     )
     assert report["status"] == "ok"
     assert report["strategy_profile"] == CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE
-    assert report["target_weights"]
+    assert report["target_weights"] == {}
+    assert report["order_previews"] == []
+    assert report["risk_flags"] == ["rejected:concentration"]
+    assert report["diagnostics"]["risk_gate"] == "REJECT"

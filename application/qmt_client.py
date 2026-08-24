@@ -47,8 +47,14 @@ class QmtBrokerClient:
             side=order.side,
             quantity=float(order.quantity),
             status=status,
-            filled_quantity=0.0 if dry_run else float(order.quantity),
-            raw_payload={"dry_run": dry_run, "broker": "qmt"},
+            # This adapter has no broker fill query.  A submitted order must
+            # stay unfilled until a future reconciliation adapter proves it.
+            filled_quantity=0.0,
+            raw_payload={
+                "dry_run": dry_run,
+                "broker": "qmt",
+                "execution_status": "dry_run_preview" if dry_run else "pending_reconciliation",
+            },
         )
 
     def preview_orders(self, orders: list[OrderIntent]) -> list[dict[str, Any]]:

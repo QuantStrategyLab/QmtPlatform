@@ -73,7 +73,7 @@ Use `.env.example` as the dry-run configuration template. Run `python3 scripts/p
 
 ## Disabled-target lifecycle validation
 
-QMT has no configured broker runtime or live credentials. The weekday `Runtime Target Lifecycle` workflow therefore runs only the deterministic preflight and fixture-backed dry-run smoke, then publishes a sanitized central status of `disabled` / `dry_run`. A passing check means the no-order validation path worked; it does **not** mean that QMT is deployed, connected to miniQMT, paper-enabled, or live-enabled. A failed check is published as `attention`; no status can change the target state or submit an order.
+QMT has no configured broker runtime or live credentials. The weekday `Runtime Target Lifecycle` workflow therefore runs only the deterministic preflight and fixture-backed dry-run smoke, then publishes a sanitized central status of `disabled` / `dry_run`. A completed dry-run with weights blocked by the deterministic risk gate is also a passing no-order validation: the platform and its safety boundary both worked. It does **not** mean that QMT is deployed, connected to miniQMT, paper-enabled, or live-enabled. A preflight or dry-run failure is published as `attention`; no status can change the target state or submit an order.
 
 ## HTTP endpoints
 

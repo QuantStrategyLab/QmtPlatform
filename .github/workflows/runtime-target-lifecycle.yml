@@ -74,7 +74,22 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/preflight_qmt_runtime.py
+          # Exit 2 from this smoke means the cycle itself completed but the
+          # deterministic risk gate kept target weights empty. That is an
+          # expected no-order outcome for a disabled target, not a runtime
+          # failure. Exit 1 still means the dry-run did not complete.
+          set +e
           python scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
+          smoke_status="$?"
+          set -e
+          if [ "$smoke_status" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$smoke_status" -eq 2 ]; then
+            echo "Dry-run completed with target weights safely blocked by the risk gate."
+            exit 0
+          fi
+          exit "$smoke_status"
 
       - name: Map validation to shared lifecycle checks
         if: ${{ always() }}

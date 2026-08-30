@@ -39,9 +39,9 @@ curl http://127.0.0.1:8080/probe
 ## 已停用目标的生命周期验证
 
 QMT 当前没有配置券商运行面或实盘凭据。工作日定时的 `Runtime Target Lifecycle` 只运行确定性预检和基于
-固定样本行情的 dry-run smoke，然后向统一管理端发布脱敏的 `disabled` / `dry_run` 状态。检查通过只表示
-“无订单验证路径正常”，不表示 QMT 已部署、已连接 miniQMT、已启用 paper 或实盘。检查失败会发布为
-`attention`；任何状态都不能改变目标开关或提交订单。
+固定样本行情的 dry-run smoke，然后向统一管理端发布脱敏的 `disabled` / `dry_run` 状态。dry-run 已完成、
+但被确定性风控拦截为空权重，也属于通过：平台与安全边界都在正常工作。它不表示 QMT 已部署、已连接 miniQMT、
+已启用 paper 或实盘。预检或 dry-run 真正失败才会发布为 `attention`；任何状态都不能改变目标开关或提交订单。
 
 详见 [README.md](README.md)（英文）。
 

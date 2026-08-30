@@ -71,6 +71,10 @@ python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 
 Use `.env.example` as the dry-run configuration template. Run `python3 scripts/preflight_qmt_runtime.py` before starting the service; it validates the selected profile and required input paths without touching any live account credentials.
 
+## Disabled-target lifecycle validation
+
+QMT has no configured broker runtime or live credentials. The weekday `Runtime Target Lifecycle` workflow therefore runs only the deterministic preflight and fixture-backed dry-run smoke, then publishes a sanitized central status of `disabled` / `dry_run`. A passing check means the no-order validation path worked; it does **not** mean that QMT is deployed, connected to miniQMT, paper-enabled, or live-enabled. A failed check is published as `attention`; no status can change the target state or submit an order.
+
 ## HTTP endpoints
 
 - `GET /probe` — health + active profile

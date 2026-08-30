@@ -13,8 +13,8 @@ authors = [{ name = "QuantStrategyLab" }]
 dependencies = [
   "flask>=3.0",
   "pandas>=2.0",
-  "quant-platform-kit @ git+https://github.com/QuantStrategyLab/QuantPlatformKit.git@be45863ad75316e3c993338828da356ddfb42f65",
-  "cn-equity-strategies @ git+https://github.com/QuantStrategyLab/CnEquityStrategies.git@38c0360a4e98aa4851280a90dc1d42a18b256e8f",
+  "quant-platform-kit @ git+https://github.com/QuantStrategyLab/QuantPlatformKit.git@ee8d996392f96e8bdf40988bd68ae30bf5911d2d",
+  "cn-equity-strategies @ git+https://github.com/QuantStrategyLab/CnEquityStrategies.git@5e1d1e00bf488541ff8f17106956c5706c2d3e69",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,108 @@
+name: Runtime Target Lifecycle
+
+on:
+  workflow_dispatch:
+  schedule:
+    # QMT has no configured broker runtime. One weekday no-order validation is
+    # sufficient for this daily strategy family and avoids pretending it has a
+    # continuously running execution service.
+    - cron: "17 22 * * 1-5"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish disabled QMT target validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXECUTION_EVIDENCE_SYNC_URL: ${{ vars.EXECUTION_EVIDENCE_SYNC_URL }}
+      QMT_DRY_RUN_ONLY: "true"
+      QMT_MARKET_HISTORY_PATH: data/fixtures/market_history.sample.csv
+      STRATEGY_PROFILE: cn_industry_etf_rotation
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Resolve QuantPlatformKit ref
+        id: quant-platform-kit-ref
+        run: |
+          set -euo pipefail
+          ref="$(grep -Eo 'QuantPlatformKit\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve CnEquityStrategies ref
+        id: cn-equity-strategies-ref
+        run: |
+          set -euo pipefail
+          ref="$(grep -Eo 'CnEquityStrategies\.git@[0-9a-f]+' pyproject.toml | head -n1 | sed 's/.*@//')"
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout QuantPlatformKit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: QuantStrategyLab/QuantPlatformKit
+          ref: ${{ steps.quant-platform-kit-ref.outputs.ref }}
+          path: external/QuantPlatformKit
+
+      - name: Checkout CnEquityStrategies
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: QuantStrategyLab/CnEquityStrategies
+          ref: ${{ steps.cn-equity-strategies-ref.outputs.ref }}
+          path: external/CnEquityStrategies
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dry-run dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies
+
+      - name: Validate disabled dry-run target
+        id: validation
+        run: |
+          set -euo pipefail
+          python scripts/preflight_qmt_runtime.py
+          python scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
+
+      - name: Map validation to shared lifecycle checks
+        if: ${{ always() }}
+        id: monitoring
+        env:
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
+        run: |
+          set -euo pipefail
+          if [ "$VALIDATION_OUTCOME" = "success" ]; then
+            echo "runtime_guard=pass" >> "$GITHUB_OUTPUT"
+          else
+            echo "runtime_guard=attention" >> "$GITHUB_OUTPUT"
+          fi
+          # This target is explicitly disabled. No process heartbeat or broker
+          # execution exists, so the shared contract requires not_applicable.
+          echo "execution_heartbeat=not_applicable" >> "$GITHUB_OUTPUT"
+
+      - name: Publish target lifecycle snapshot
+        if: ${{ always() }}
+        uses: QuantStrategyLab/QuantRuntimeSettings/actions/publish-runtime-target-lifecycle@6d71e785dbf21bac6c829a1fc72f3a4492d36f54
+        with:
+          source-id: qmt.runtime-target-lifecycle
+          target-id: qmt.cn_industry_etf_rotation
+          platform: qmt
+          configured-state: disabled
+          execution-mode: dry_run
+          runtime-guard: ${{ steps.monitoring.outputs.runtime_guard }}
+          execution-heartbeat: ${{ steps.monitoring.outputs.execution_heartbeat }}
+          sync-url: ${{ env.EXECUTION_EVIDENCE_SYNC_URL }}
+        env:
+          EXECUTION_EVIDENCE_SYNC_TOKEN: ${{ secrets.EXECUTION_EVIDENCE_SYNC_TOKEN }}

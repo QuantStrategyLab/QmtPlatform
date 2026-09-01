@@ -6,8 +6,8 @@ allow_legacy = false
 enforce_bundle = true
 
 [qsl.requires]
-quant_platform_kit = "ee8d996392f96e8bdf40988bd68ae30bf5911d2d"
-cn_equity_strategies = "5e1d1e00bf488541ff8f17106956c5706c2d3e69"
+quant_platform_kit = "8fe855f3cf35f48354a4e6963e2b6b8bc6f4dc2a"
+cn_equity_strategies = "2d4f4d44f30d67c48e4eceb5d2b9cc0287526291"
 
 [qsl.compat]
 bundle = "2026.07.3"

@@ -13,7 +13,7 @@ def test_qsl_metadata_has_runtime_platform_fields() -> None:
     assert qsl["upgrade_ring"] == "ring_d"
     assert qsl.get("repo") == "QmtPlatform"
     assert qsl["enforce_bundle"] is True
-    assert qsl["compat"]["bundle"] == "2026.07.3"
+    assert qsl["compat"]["bundle"] == "2026.09.0"
     requires = qsl["requires"]
     assert requires["quant_platform_kit"] == "08eed913248953986224e09ea3a8dd9f5ebedc4e"
     assert requires["cn_equity_strategies"] == "aa2af9c56cc6600159a2bf83f2181ef721e14511"

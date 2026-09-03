@@ -11,7 +11,7 @@
 
 A-share quant platform layer for **miniQMT / QMT**, built on `QuantPlatformKit` and `CnEquityStrategies`.
 
-Current scope is **dry-run first**: evaluate strategy targets and preview orders without submitting to the broker.
+Current scope is **offline dry-run only**: evaluate strategy targets and preview orders without submitting to the broker. This repository is not a shadow/live runtime; any non-dry-run order request is rejected as `blocked` and is never reported as `submitted`.
 
 ## Supported dry-run profiles
 
@@ -64,7 +64,7 @@ python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 
 | Variable | Default | Description |
 |---|---|---|
-| `QMT_DRY_RUN_ONLY` | `true` | When true, never submit live orders |
+| `QMT_DRY_RUN_ONLY` | `true` | Offline-only guard; non-dry-run requests remain blocked |
 | `STRATEGY_PROFILE` | required | QMT-enabled strategy profile id |
 | `QMT_MARKET_HISTORY_PATH` | — | CSV with `date,symbol,close` for direct strategies |
 | `RUNTIME_TARGET_JSON` | — | Optional runtime target override from QuantRuntimeSettings |

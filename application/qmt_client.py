@@ -41,19 +41,20 @@ class QmtBrokerClient:
         return frame
 
     def submit_order(self, order: OrderIntent, *, dry_run: bool = True) -> ExecutionReport:
-        status = "previewed" if dry_run else "submitted"
+        status = "previewed" if dry_run else "blocked"
         return ExecutionReport(
             symbol=order.symbol,
             side=order.side,
             quantity=float(order.quantity),
             status=status,
-            # This adapter has no broker fill query.  A submitted order must
-            # stay unfilled until a future reconciliation adapter proves it.
+            # This offline adapter never submits to QMT. Non-dry-run requests
+            # must remain explicitly blocked rather than looking executable.
             filled_quantity=0.0,
             raw_payload={
                 "dry_run": dry_run,
                 "broker": "qmt",
-                "execution_status": "dry_run_preview" if dry_run else "pending_reconciliation",
+                "execution_status": "dry_run_preview" if dry_run else "dry_run_only_blocked",
+                "executable": False,
             },
         )
 

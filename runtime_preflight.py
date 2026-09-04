@@ -4,11 +4,26 @@ import hashlib
 import os
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from runtime_config_support import PlatformRuntimeSettings, load_platform_runtime_settings
 from strategy_loader import load_strategy_entrypoint_for_profile
+
+
+E3_RECEIPT_SCHEMA_VERSION = "qmt.e3.receipt.v1"
+E3_RECEIPT_REQUIRED_SUMMARY_COUNTS = ("accounts", "positions", "orders", "fills", "cash", "ledger")
+_E3_RECEIPT_FIELDS = frozenset(
+    {
+        "schema_version",
+        "as_of",
+        "freshness_seconds",
+        "no_order",
+        "verify_only",
+        "summary_counts",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +55,109 @@ class QmtPreflightReport:
                 for issue in self.issues
             ],
         }
+
+
+@dataclass(frozen=True)
+class E3ReceiptValidationReport:
+    status: str
+    schema_version: str | None
+    issues: tuple[PreflightIssue, ...]
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "schema_version": self.schema_version,
+            "required_summary_counts": list(E3_RECEIPT_REQUIRED_SUMMARY_COUNTS),
+            "issues": [
+                {"code": issue.code, "message": issue.message}
+                for issue in self.issues
+            ],
+        }
+
+
+def validate_e3_receipt(
+    receipt: object,
+    *,
+    now: datetime | None = None,
+) -> E3ReceiptValidationReport:
+    """Validate a local E3 receipt without connecting to miniQMT or a provider."""
+    if not isinstance(receipt, dict):
+        return E3ReceiptValidationReport(
+            status="error",
+            schema_version=None,
+            issues=(PreflightIssue("invalid_receipt", "Receipt must be a JSON object."),),
+        )
+
+    issues: list[PreflightIssue] = []
+    schema_version = receipt.get("schema_version")
+    reported_schema_version = schema_version if schema_version == E3_RECEIPT_SCHEMA_VERSION else None
+
+    receipt_fields = frozenset(receipt)
+    if _E3_RECEIPT_FIELDS - receipt_fields:
+        issues.append(PreflightIssue("missing_receipt_fields", "Receipt has required fields missing."))
+    if receipt_fields - _E3_RECEIPT_FIELDS:
+        issues.append(PreflightIssue("unexpected_receipt_fields", "Receipt must not contain detail-bearing fields."))
+    if schema_version != E3_RECEIPT_SCHEMA_VERSION:
+        issues.append(PreflightIssue("invalid_schema_version", "Receipt schema version is not accepted."))
+
+    _validate_e3_summary_counts(receipt.get("summary_counts"), issues)
+    _validate_e3_declarations(receipt, issues)
+    _validate_e3_freshness(receipt, now=now, issues=issues)
+
+    return E3ReceiptValidationReport(
+        status="ok" if not issues else "error",
+        schema_version=reported_schema_version,
+        issues=tuple(issues),
+    )
+
+
+def _validate_e3_summary_counts(value: object, issues: list[PreflightIssue]) -> None:
+    if not isinstance(value, dict) or frozenset(value) != frozenset(E3_RECEIPT_REQUIRED_SUMMARY_COUNTS):
+        issues.append(PreflightIssue("invalid_summary_counts", "Receipt must contain only the required summary counts."))
+        return
+    if any(not isinstance(count, int) or isinstance(count, bool) or count < 0 for count in value.values()):
+        issues.append(PreflightIssue("invalid_summary_counts", "Receipt summary counts must be non-negative integers."))
+
+
+def _validate_e3_declarations(receipt: dict[object, object], issues: list[PreflightIssue]) -> None:
+    if receipt.get("no_order") is not True:
+        issues.append(PreflightIssue("no_order_required", "Receipt must declare no_order=true."))
+    if receipt.get("verify_only") is not True:
+        issues.append(PreflightIssue("verify_only_required", "Receipt must declare verify_only=true."))
+
+
+def _validate_e3_freshness(
+    receipt: dict[object, object],
+    *,
+    now: datetime | None,
+    issues: list[PreflightIssue],
+) -> None:
+    freshness_seconds = receipt.get("freshness_seconds")
+    if not isinstance(freshness_seconds, int) or isinstance(freshness_seconds, bool) or freshness_seconds < 0:
+        issues.append(PreflightIssue("invalid_freshness", "Receipt freshness must be a non-negative integer."))
+        return
+
+    as_of = receipt.get("as_of")
+    if not isinstance(as_of, str):
+        issues.append(PreflightIssue("invalid_as_of", "Receipt as_of must be a timezone-aware timestamp."))
+        return
+    try:
+        as_of_time = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+    except ValueError:
+        issues.append(PreflightIssue("invalid_as_of", "Receipt as_of must be a timezone-aware timestamp."))
+        return
+    if as_of_time.tzinfo is None:
+        issues.append(PreflightIssue("invalid_as_of", "Receipt as_of must be a timezone-aware timestamp."))
+        return
+
+    reference_time = now or datetime.now(timezone.utc)
+    if reference_time.tzinfo is None:
+        reference_time = reference_time.replace(tzinfo=timezone.utc)
+    age_seconds = (reference_time - as_of_time).total_seconds()
+    if age_seconds < 0:
+        issues.append(PreflightIssue("invalid_as_of", "Receipt as_of cannot be in the future."))
+    elif age_seconds > freshness_seconds:
+        issues.append(PreflightIssue("stale_receipt", "Receipt is older than its declared freshness window."))
 
 
 def run_preflight(*, paper_admission: bool = False) -> QmtPreflightReport:

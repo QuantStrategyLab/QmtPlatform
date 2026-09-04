@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from unittest.mock import patch
 
 from quant_platform_kit.common.models import PortfolioSnapshot
-from quant_platform_kit.strategy_contracts import (
+from quant_platform_kit.common.strategy_contracts import (
     StrategyDecision,
     StrategyManifest,
     StrategyRuntimeAdapter,

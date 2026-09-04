@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from quant_platform_kit.common.strategies import StrategyDefinition, load_strategy_entrypoint
-from quant_platform_kit.strategy_contracts import StrategyEntrypoint, StrategyRuntimeAdapter
+from quant_platform_kit.common.strategy_contracts import (
+    StrategyEntrypoint,
+    StrategyRuntimeAdapter,
+)
 from cn_equity_strategies import get_platform_runtime_adapter
 
 from strategy_registry import QMT_PLATFORM, resolve_strategy_definition

@@ -11,7 +11,24 @@
 
 A 股量化平台层，基于 `QuantPlatformKit` 和 `CnEquityStrategies` 构建，对接 **miniQMT / QMT**。
 
-当前范围为**仅干跑**：评估策略目标并预览订单，不向券商提交实盘。
+当前范围为**仅干跑**：评估策略目标并预览订单，不向券商提交实盘；任何 non-dry-run 请求均会返回 `blocked`，不会被报告为 `submitted`。
+
+## 离线 paper-admission（不是券商 paper）
+
+`--paper-admission` 是确定性的本地配置门槛，不连接 miniQMT/QMT paper 账户。它必须同时满足：
+
+- `QMT_EXECUTION_MODE=paper`；
+- `QMT_DRY_RUN_ONLY=true`；
+- 预先记录的 SHA-256 与固定的 `QMT_MARKET_HISTORY_PATH` 输入一致。
+
+该命令只加载策略契约并计算本地输入摘要；不会调用 QMT SDK/provider、读取凭据、创建订单或读取券商账户，也不代表系统已经具备 broker-paper 或 live 能力。
+
+```bash
+export QMT_EXECUTION_MODE=paper
+export QMT_DRY_RUN_ONLY=true
+export QMT_PAPER_ADMISSION_INPUT_SHA256=5612a923290ed9fb779ce39613c5ea875ee68f69bf2aade0358761f2b86b3afb
+python3 scripts/preflight_qmt_runtime.py --paper-admission
+```
 
 ## 支持 dry-run 策略
 

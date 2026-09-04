@@ -1,10 +1,20 @@
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
+
+import pytest
+
 from runtime_preflight import run_preflight
+from scripts.preflight_qmt_runtime import main
 
 
 def _issue_codes(report) -> set[str]:
     return {issue.code for issue in report.issues}
+
+
+def _sha256(path: str) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def test_preflight_accepts_primary_dry_run_config(monkeypatch, market_history_csv: str):
@@ -44,6 +54,77 @@ def test_preflight_blocks_non_dry_run_config(monkeypatch, market_history_csv: st
 
     assert report.status == "error"
     assert _issue_codes(report) == {"non_dry_run_blocked"}
+
+
+def test_paper_admission_requires_paper_mode_and_a_frozen_input_digest(monkeypatch, market_history_csv: str):
+    monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
+    monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
+    monkeypatch.setenv("QMT_EXECUTION_MODE", "paper")
+    monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
+    monkeypatch.setenv(
+        "QMT_PAPER_ADMISSION_INPUT_SHA256",
+        _sha256(market_history_csv),
+    )
+    monkeypatch.delenv("RUNTIME_TARGET_JSON", raising=False)
+
+    report = run_preflight(paper_admission=True)
+
+    assert report.status == "ok"
+    assert report.dry_run_only is True
+    assert report.execution_mode == "paper"
+    assert report.paper_admission is True
+    assert report.to_payload() == run_preflight(paper_admission=True).to_payload()
+
+
+def test_paper_admission_rejects_live_mode_and_non_dry_run(monkeypatch, market_history_csv: str):
+    monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
+    monkeypatch.setenv("QMT_DRY_RUN_ONLY", "false")
+    monkeypatch.setenv("QMT_EXECUTION_MODE", "live")
+    monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
+    monkeypatch.setenv("QMT_PAPER_ADMISSION_INPUT_SHA256", "0" * 64)
+    monkeypatch.delenv("RUNTIME_TARGET_JSON", raising=False)
+
+    report = run_preflight(paper_admission=True)
+
+    assert report.status == "error"
+    assert _issue_codes(report) == {
+        "non_dry_run_blocked",
+        "paper_admission_dry_run_required",
+        "paper_admission_mode_required",
+        "paper_admission_input_digest_mismatch",
+    }
+
+
+def test_paper_admission_rejects_an_unfrozen_input(monkeypatch, market_history_csv: str):
+    monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
+    monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
+    monkeypatch.setenv("QMT_EXECUTION_MODE", "paper")
+    monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
+    monkeypatch.setenv("QMT_PAPER_ADMISSION_INPUT_SHA256", "0" * 64)
+    monkeypatch.delenv("RUNTIME_TARGET_JSON", raising=False)
+
+    report = run_preflight(paper_admission=True)
+
+    assert report.status == "error"
+    assert _issue_codes(report) == {"paper_admission_input_digest_mismatch"}
+
+
+def test_preflight_cli_has_no_non_dry_run_bypass():
+    with pytest.raises(SystemExit) as exc_info:
+        main(["--allow-non-dry-run"])
+
+    assert exc_info.value.code == 2
+
+
+def test_preflight_cli_runs_offline_paper_admission(monkeypatch, market_history_csv: str):
+    monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
+    monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
+    monkeypatch.setenv("QMT_EXECUTION_MODE", "paper")
+    monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
+    monkeypatch.setenv("QMT_PAPER_ADMISSION_INPUT_SHA256", _sha256(market_history_csv))
+    monkeypatch.delenv("RUNTIME_TARGET_JSON", raising=False)
+
+    assert main(["--paper-admission"]) == 0
 
 
 def test_preflight_rejects_research_only_dividend_profile(monkeypatch):

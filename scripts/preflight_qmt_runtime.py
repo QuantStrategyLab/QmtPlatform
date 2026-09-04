@@ -16,13 +16,13 @@ from runtime_preflight import run_preflight  # noqa: E402
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate QMT dry-run runtime configuration.")
     parser.add_argument(
-        "--allow-non-dry-run",
+        "--paper-admission",
         action="store_true",
-        help="Only validates config shape; does not enable live order submission.",
+        help="Validate the offline paper-admission contract without calling QMT or creating orders.",
     )
     args = parser.parse_args(argv)
 
-    report = run_preflight(allow_non_dry_run=args.allow_non_dry_run)
+    report = run_preflight(paper_admission=args.paper_admission)
     print(json.dumps(report.to_payload(), ensure_ascii=False, indent=2))
     return 0 if report.status == "ok" else 2
 

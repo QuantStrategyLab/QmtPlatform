@@ -25,3 +25,10 @@ def test_qmt_dry_run_remains_an_unfilled_preview() -> None:
     assert report.status == "previewed"
     assert report.filled_quantity == 0.0
     assert report.raw_payload["execution_status"] == "dry_run_preview"
+
+
+def test_qmt_portfolio_snapshot_is_explicitly_synthetic_and_not_reconciled() -> None:
+    snapshot = QmtBrokerClient().get_portfolio_snapshot()
+
+    assert snapshot.metadata["evidence_source"] == "synthetic"
+    assert snapshot.metadata["reconciliation_status"] == "not_available"

@@ -25,7 +25,12 @@ class QmtBrokerClient:
             buying_power=float(self.cash_cny),
             cash_balance=float(self.cash_cny),
             positions=(),
-            metadata={"account_id": self.account_id, "currency": "CNY"},
+            metadata={
+                "account_id": self.account_id,
+                "currency": "CNY",
+                "evidence_source": "synthetic",
+                "reconciliation_status": "not_available",
+            },
         )
 
     def load_market_history(self) -> pd.DataFrame:

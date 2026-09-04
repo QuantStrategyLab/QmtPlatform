@@ -15,5 +15,5 @@ def test_qsl_metadata_has_runtime_platform_fields() -> None:
     assert qsl["enforce_bundle"] is True
     assert qsl["compat"]["bundle"] == "2026.09.1"
     requires = qsl["requires"]
-    assert requires["quant_platform_kit"] == "b13e28759a880dcb446dbfbc580dc032333b065e"
-    assert requires["cn_equity_strategies"] == "9cb62eb34e16bb6dde300595b74f38a3b6a2d4c1"
+    assert requires["quant_platform_kit"] == "7f140f07ac89f0b4b88347a903906825dde11c39"
+    assert requires["cn_equity_strategies"] == "3ed1bfb5c2d481f96b941c3d5299d477ccded734"

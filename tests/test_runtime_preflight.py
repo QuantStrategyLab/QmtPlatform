@@ -7,7 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from runtime_preflight import E3_RECEIPT_SCHEMA_VERSION, run_preflight, validate_e3_receipt
+from runtime_preflight import (
+    E3_RECEIPT_MAX_FRESHNESS_SECONDS,
+    E3_RECEIPT_SCHEMA_VERSION,
+    run_preflight,
+    validate_e3_receipt,
+)
 from scripts.preflight_qmt_runtime import main
 
 
@@ -181,6 +186,7 @@ def test_e3_receipt_validator_accepts_complete_sanitized_receipt():
         ("summary_counts", {"accounts": 1}, "invalid_summary_counts"),
         ("as_of", "not-a-timestamp", "invalid_as_of"),
         ("freshness_seconds", -1, "invalid_freshness"),
+        ("freshness_seconds", E3_RECEIPT_MAX_FRESHNESS_SECONDS + 1, "invalid_freshness"),
         ("no_order", False, "no_order_required"),
         ("verify_only", False, "verify_only_required"),
     ],

@@ -14,6 +14,7 @@ from strategy_loader import load_strategy_entrypoint_for_profile
 
 E3_RECEIPT_SCHEMA_VERSION = "qmt.e3.receipt.v1"
 E3_RECEIPT_REQUIRED_SUMMARY_COUNTS = ("accounts", "positions", "orders", "fills", "cash", "ledger")
+E3_RECEIPT_MAX_FRESHNESS_SECONDS = 300
 _E3_RECEIPT_FIELDS = frozenset(
     {
         "schema_version",
@@ -133,8 +134,12 @@ def _validate_e3_freshness(
     issues: list[PreflightIssue],
 ) -> None:
     freshness_seconds = receipt.get("freshness_seconds")
-    if not isinstance(freshness_seconds, int) or isinstance(freshness_seconds, bool) or freshness_seconds < 0:
-        issues.append(PreflightIssue("invalid_freshness", "Receipt freshness must be a non-negative integer."))
+    if (
+        not isinstance(freshness_seconds, int)
+        or isinstance(freshness_seconds, bool)
+        or not 0 <= freshness_seconds <= E3_RECEIPT_MAX_FRESHNESS_SECONDS
+    ):
+        issues.append(PreflightIssue("invalid_freshness", "Receipt freshness is outside the accepted window."))
         return
 
     as_of = receipt.get("as_of")

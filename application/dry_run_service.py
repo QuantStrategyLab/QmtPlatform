@@ -6,7 +6,7 @@ from typing import Any
 
 from application.qmt_client import QmtBrokerClient
 from quant_platform_kit.common.execution_outcomes import resolve_strategy_run_stage
-from quant_platform_kit.strategy_contracts import PositionTarget
+from quant_platform_kit.common.strategy_contracts import PositionTarget
 from runtime_config_support import PlatformRuntimeSettings
 from strategy_runtime import load_strategy_runtime
 

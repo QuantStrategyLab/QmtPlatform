@@ -37,7 +37,7 @@ wheels = [
 [[package]]
 name = "cn-equity-strategies"
 version = "0.1.0"
-source = { git = "https://github.com/QuantStrategyLab/CnEquityStrategies.git?rev=3ed1bfb5c2d481f96b941c3d5299d477ccded734#3ed1bfb5c2d481f96b941c3d5299d477ccded734" }
+source = { git = "https://github.com/QuantStrategyLab/CnEquityStrategies.git?rev=4a4ff37b068c0012ccb57f52486d1c6745cf113d#4a4ff37b068c0012ccb57f52486d1c6745cf113d" }
 dependencies = [
     { name = "pandas" },
     { name = "quant-platform-kit" },
@@ -450,18 +450,18 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cn-equity-strategies", git = "https://github.com/QuantStrategyLab/CnEquityStrategies.git?rev=3ed1bfb5c2d481f96b941c3d5299d477ccded734" },
+    { name = "cn-equity-strategies", git = "https://github.com/QuantStrategyLab/CnEquityStrategies.git?rev=4a4ff37b068c0012ccb57f52486d1c6745cf113d" },
     { name = "flask", specifier = ">=3.0" },
     { name = "pandas", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
-    { name = "quant-platform-kit", git = "https://github.com/QuantStrategyLab/QuantPlatformKit.git?rev=7f140f07ac89f0b4b88347a903906825dde11c39" },
+    { name = "quant-platform-kit", git = "https://github.com/QuantStrategyLab/QuantPlatformKit.git?rev=c7646a7168b3dafa763ef7751a182d23e8de7790" },
 ]
 provides-extras = ["test"]
 
 [[package]]
 name = "quant-platform-kit"
 version = "1.0.0"
-source = { git = "https://github.com/QuantStrategyLab/QuantPlatformKit.git?rev=7f140f07ac89f0b4b88347a903906825dde11c39#7f140f07ac89f0b4b88347a903906825dde11c39" }
+source = { git = "https://github.com/QuantStrategyLab/QuantPlatformKit.git?rev=c7646a7168b3dafa763ef7751a182d23e8de7790#c7646a7168b3dafa763ef7751a182d23e8de7790" }
 
 [[package]]
 name = "six"

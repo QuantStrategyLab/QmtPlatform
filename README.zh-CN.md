@@ -1,5 +1,8 @@
 # QmtPlatform
 
+A 股量化平台层，基于 `QuantPlatformKit` 和 `CnEquityStrategies` 构建，对接 **miniQMT / QMT**。
+
+当前范围为**仅干跑**：评估策略目标并预览订单，不向券商提交实盘；任何 non-dry-run 请求均会返回 `blocked`，不会被报告为 `submitted`。
 
 ## QSL 架构角色
 
@@ -8,10 +11,6 @@
 - **事实源/归属**：QMT runtime 控制和 A 股平台集成。
 - **消费对象**：CnEquityStrategies、QuantPlatformKit、QuantRuntimeSettings、market-history 输入。
 - **禁止事项**：承载策略研究逻辑或发布 snapshot artifacts。
-
-A 股量化平台层，基于 `QuantPlatformKit` 和 `CnEquityStrategies` 构建，对接 **miniQMT / QMT**。
-
-当前范围为**仅干跑**：评估策略目标并预览订单，不向券商提交实盘；任何 non-dry-run 请求均会返回 `blocked`，不会被报告为 `submitted`。
 
 ## 离线 paper-admission（不是券商 paper）
 

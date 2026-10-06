@@ -1,5 +1,8 @@
 # QmtPlatform
 
+A-share quant platform layer for **miniQMT / QMT**, built on `QuantPlatformKit` and `CnEquityStrategies`.
+
+Current scope is **offline dry-run only**: evaluate strategy targets and preview orders without submitting to the broker. This repository is not a shadow/live runtime; any non-dry-run order request is rejected as `blocked` and is never reported as `submitted`.
 
 ## QSL architecture role
 
@@ -8,10 +11,6 @@
 - **Owns**: QMT runtime controls and A-share platform integration.
 - **Consumes**: CnEquityStrategies, QuantPlatformKit, QuantRuntimeSettings, market-history inputs.
 - **Must not**: own strategy research logic or publish snapshot artifacts.
-
-A-share quant platform layer for **miniQMT / QMT**, built on `QuantPlatformKit` and `CnEquityStrategies`.
-
-Current scope is **offline dry-run only**: evaluate strategy targets and preview orders without submitting to the broker. This repository is not a shadow/live runtime; any non-dry-run order request is rejected as `blocked` and is never reported as `submitted`.
 
 ## Offline paper admission (not broker paper)
 

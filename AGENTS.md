@@ -39,6 +39,8 @@ PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests
 Runtime-guard changes also need the dry-run preflight and smoke scripts listed in
 `CONTRIBUTING.md`. They require `QMT_DRY_RUN_ONLY=true` and a sample history path.
 
+Organization documentation rules are checked by `python scripts/check_style.py`, which also runs in CI as the `Documentation check` job.
+
 ## Naming and documentation
 
 - Developer documentation is English by default; Chinese siblings use

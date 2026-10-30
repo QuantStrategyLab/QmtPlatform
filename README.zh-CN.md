@@ -70,7 +70,7 @@ python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 | `cn_industry_etf_rotation` | `market_history` | 主要策略。 |
 | `cn_industry_etf_rotation_aggressive` | `market_history` | 可选策略，目标波动率为 25%。 |
 
-未设置 `RUNTIME_TARGET_JSON` 时，可通过 `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` 选择可选策略。运行目标示例见 [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/industry_etf_aggressive_dry_run.example.json)。
+未设置 `RUNTIME_TARGET_JSON` 时，可通过 `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` 选择可选策略。QMT 运行目标结构见 [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/README.md)。
 
 可用策略由 `CnEquityStrategies` 的策略目录和 QMT 启用清单决定。QMT 运行配置不接受 `cn_dividend_quality_snapshot`、`cn_index_etf_tactical_rotation` 等仅供研究的策略配置。
 

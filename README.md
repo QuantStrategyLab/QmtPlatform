@@ -70,7 +70,7 @@ Use [`.env.example`](.env.example) as the dry-run configuration reference. Expor
 | `cn_industry_etf_rotation` | `market_history` | Primary profile. |
 | `cn_industry_etf_rotation_aggressive` | `market_history` | Optional profile with a 25% volatility target. |
 
-Set `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` to select the optional profile when `RUNTIME_TARGET_JSON` is unset. A runtime target example is available in [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/industry_etf_aggressive_dry_run.example.json).
+Set `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` to select the optional profile when `RUNTIME_TARGET_JSON` is unset. The QMT target layout is documented in [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/README.md).
 
 Profile availability follows the `CnEquityStrategies` catalog and QMT rollout allowlist. Research-only profiles such as `cn_dividend_quality_snapshot` and `cn_index_etf_tactical_rotation` are rejected by the QMT runtime policy.
 

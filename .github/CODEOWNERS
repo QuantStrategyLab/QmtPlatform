@@ -1,0 +1,6 @@
+
+
+# Risk-sensitive changes require the repository owner.
+/.env.example @Pigbibi
+/.github/CODEOWNERS @Pigbibi
+/.github/workflows/ @Pigbibi

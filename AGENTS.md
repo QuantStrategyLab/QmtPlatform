@@ -70,6 +70,8 @@ Organization documentation rules are checked by `python scripts/check_style.py`,
 
 ## Do not
 
+- Only the owner, or a reviewer explicitly authorized by the owner, may apply the `owner-approved` label; coding agents must never apply it to their own PRs.
+
 - Do not add a live QMT or miniQMT broker connection; this repository has no
   configured broker target.
 - Do not report a `blocked` adapter result as submitted or filled.

@@ -95,6 +95,8 @@ The weekday `Runtime Target Lifecycle` workflow runs deterministic preflight and
 
 ## HTTP endpoints
 
+`main.create_app()` constructs a separate Flask application with the routes below. The existing `main.app` export remains available to WSGI servers and the local entrypoint; runtime settings continue to load per request.
+
 | Method | Path | Response |
 |---|---|---|
 | `GET` | `/probe` | Health, active profile, and dry-run setting. |

@@ -95,6 +95,8 @@ python3 scripts/preflight_qmt_runtime.py --paper-admission
 
 ## HTTP 接口
 
+`main.create_app()` 创建独立的 Flask 应用，注册下表中的路由。现有的 `main.app` 导出继续供 WSGI 服务和本地入口使用；运行配置仍在每次请求时读取。
+
 | 方法 | 路径 | 响应 |
 |---|---|---|
 | `GET` | `/probe` | 健康状态、当前策略和 dry-run 设置。 |

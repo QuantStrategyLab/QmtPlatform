@@ -6,7 +6,7 @@ A-share quant platform layer for miniQMT / QMT, built on `QuantPlatformKit` and 
 
 ## Status
 
-Experimental. The current implementation evaluates strategies offline and previews orders. This project is not financial advice and does not guarantee any trading result.
+Experimental. The pinned CN policy has no selectable runtime profiles. Retired profiles are rejected before offline evaluation or order preview; historical catalog metadata and adapters remain available. This project is not financial advice and does not guarantee any trading result.
 
 ## What this is
 
@@ -24,30 +24,10 @@ Requirements: Python 3.11 or later and Git. Run these commands from the reposito
 python3 -m pip install -e '.[test]'
 python3 -m pytest -q tests
 
-unset RUNTIME_TARGET_JSON
-export STRATEGY_PROFILE=cn_industry_etf_rotation
-export QMT_DRY_RUN_ONLY=true
-export QMT_EXECUTION_MODE=dry_run
-export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
-
-python3 scripts/preflight_qmt_runtime.py
 python3 main.py
 ```
 
-In another terminal, query the local service:
-
-```bash
-curl http://127.0.0.1:8080/probe
-curl http://127.0.0.1:8080/profiles
-curl http://127.0.0.1:8080/dry-run
-```
-
-The fixture-backed smoke scripts run a local strategy cycle without starting the HTTP service:
-
-```bash
-python3 scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
-python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
-```
+Query `GET /profiles` to inspect the disabled historical profiles. No profile can currently pass preflight or run through `/dry-run`. The retained industry ETF smoke scripts reject their retired profiles under this policy.
 
 ## Configuration
 
@@ -63,20 +43,13 @@ Use [`.env.example`](.env.example) as the dry-run configuration reference. Expor
 | `RUNTIME_TARGET_JSON` | No | none | JSON runtime target from `QuantRuntimeSettings`; takes precedence over `STRATEGY_PROFILE`. |
 | `PORT` | No | `8080` | HTTP port; the Flask entrypoint binds to `0.0.0.0`. |
 
-## Supported dry-run profiles
+## Retired profiles
 
-| Profile | Input mode | Role |
-|---|---|---|
-| `cn_industry_etf_rotation` | `market_history` | Primary profile. |
-| `cn_industry_etf_rotation_aggressive` | `market_history` | Optional profile with a 25% volatility target. |
-
-Set `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` to select the optional profile when `RUNTIME_TARGET_JSON` is unset. The QMT target layout is documented in [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/README.md).
-
-Profile availability follows the `CnEquityStrategies` catalog and QMT rollout allowlist. Research-only profiles such as `cn_dividend_quality_snapshot` and `cn_index_etf_tactical_rotation` are rejected by the QMT runtime policy.
+`cn_industry_etf_rotation` and `cn_industry_etf_rotation_aggressive` are no longer selectable, including through aliases, environment configuration or `RUNTIME_TARGET_JSON`. The QMT rollout allowlist is empty. Historical definitions and adapters remain available for reading and isolated contract tests; they do not grant runtime selection.
 
 ## Offline paper admission
 
-`--paper-admission` checks a local configuration and fixed input file. It requires `QMT_EXECUTION_MODE=paper`, `QMT_DRY_RUN_ONLY=true`, and a pre-recorded SHA-256 digest matching `QMT_MARKET_HISTORY_PATH`.
+`--paper-admission` currently rejects retired profiles at configuration validation. The retained checks below describe the offline contract for an eligible profile. The command checks a local configuration and fixed input file. It requires `QMT_EXECUTION_MODE=paper`, `QMT_DRY_RUN_ONLY=true`, and a pre-recorded SHA-256 digest matching `QMT_MARKET_HISTORY_PATH`.
 
 After configuring the profile and input path, replace `<expected-sha256>` with that recorded digest:
 
@@ -91,7 +64,7 @@ The command loads the strategy contract and hashes the local input. It does not 
 
 ## Disabled-target lifecycle validation
 
-The weekday `Runtime Target Lifecycle` workflow runs deterministic preflight and a fixture-backed dry-run for a fixed disabled target. It publishes `disabled` / `dry_run` status. A completed cycle whose target weights are empty because of the risk gate is a successful no-order check; a preflight or dry-run failure is reported as `attention`. These reports do not change target settings, establish a broker connection, or submit orders.
+With the current empty allowlist, the retained industry ETF target fails preflight and is reported as `attention`. The weekday `Runtime Target Lifecycle` workflow runs deterministic preflight and a fixture-backed dry-run for a fixed disabled target. It publishes `disabled` / `dry_run` status. A completed cycle whose target weights are empty because of the risk gate is a successful no-order check; a preflight or dry-run failure is reported as `attention`. These reports do not change target settings, establish a broker connection, or submit orders.
 
 ## HTTP endpoints
 

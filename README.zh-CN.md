@@ -6,7 +6,7 @@
 
 ## 状态
 
-实验性项目。当前实现离线评估策略并预览订单。本项目不构成投资建议，也不保证任何交易结果。
+实验性项目。固定依赖中的 A 股政策已无可选运行策略；退役策略会在离线评估或订单预览之前被拒绝，历史策略元数据和适配器仍保留。本项目不构成投资建议，也不保证任何交易结果。
 
 ## 简介
 
@@ -24,30 +24,10 @@ QmtPlatform 提供 QMT 平台集成层。它从 `CnEquityStrategies` 加载策�
 python3 -m pip install -e '.[test]'
 python3 -m pytest -q tests
 
-unset RUNTIME_TARGET_JSON
-export STRATEGY_PROFILE=cn_industry_etf_rotation
-export QMT_DRY_RUN_ONLY=true
-export QMT_EXECUTION_MODE=dry_run
-export QMT_MARKET_HISTORY_PATH=data/fixtures/market_history.sample.csv
-
-python3 scripts/preflight_qmt_runtime.py
 python3 main.py
 ```
 
-在另一个终端查询本地服务：
-
-```bash
-curl http://127.0.0.1:8080/probe
-curl http://127.0.0.1:8080/profiles
-curl http://127.0.0.1:8080/dry-run
-```
-
-以下 smoke 脚本使用固定样本运行本地策略周期，无需启动 HTTP 服务：
-
-```bash
-python3 scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
-python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
-```
+通过 `GET /profiles` 查看已停用的历史策略。目前没有策略能通过预检或运行 `/dry-run`；保留的行业 ETF smoke 脚本也会因策略退役而拒绝运行。
 
 ## 配置
 
@@ -63,20 +43,13 @@ python3 scripts/smoke_cn_industry_etf_rotation_aggressive_dry_run_e2e.py
 | `RUNTIME_TARGET_JSON` | 否 | 无 | 来自 `QuantRuntimeSettings` 的 JSON 运行目标；优先于 `STRATEGY_PROFILE`。 |
 | `PORT` | 否 | `8080` | HTTP 端口；Flask 入口绑定 `0.0.0.0`。 |
 
-## 支持的 dry-run 策略
+## 已退役策略
 
-| 策略配置 | 输入模式 | 用途 |
-|---|---|---|
-| `cn_industry_etf_rotation` | `market_history` | 主要策略。 |
-| `cn_industry_etf_rotation_aggressive` | `market_history` | 可选策略，目标波动率为 25%。 |
-
-未设置 `RUNTIME_TARGET_JSON` 时，可通过 `STRATEGY_PROFILE=cn_industry_etf_rotation_aggressive` 选择可选策略。QMT 运行目标结构见 [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings/blob/main/examples/targets/qmt/README.md)。
-
-可用策略由 `CnEquityStrategies` 的策略目录和 QMT 启用清单决定。QMT 运行配置不接受 `cn_dividend_quality_snapshot`、`cn_index_etf_tactical_rotation` 等仅供研究的策略配置。
+`cn_industry_etf_rotation` 和 `cn_industry_etf_rotation_aggressive` 均不可再选择，包括别名、环境变量及 `RUNTIME_TARGET_JSON` 入口。QMT 运行允许清单为空。历史定义和适配器供读取及隔离的契约测试使用，不赋予运行选择资格。
 
 ## 离线 paper-admission 检查
 
-`--paper-admission` 检查本地配置和固定输入文件。它要求 `QMT_EXECUTION_MODE=paper`、`QMT_DRY_RUN_ONLY=true`，且预先记录的 SHA-256 摘要与 `QMT_MARKET_HISTORY_PATH` 一致。
+`--paper-admission` 目前会在配置检查时拒绝退役策略。下面保留的是具备选择资格时的离线检查契约：检查本地配置和固定输入文件。它要求 `QMT_EXECUTION_MODE=paper`、`QMT_DRY_RUN_ONLY=true`，且预先记录的 SHA-256 摘要与 `QMT_MARKET_HISTORY_PATH` 一致。
 
 配置策略和输入路径后，将 `<expected-sha256>` 替换为预先记录的摘要：
 
@@ -91,7 +64,7 @@ python3 scripts/preflight_qmt_runtime.py --paper-admission
 
 ## 已停用目标的生命周期验证
 
-工作日运行的 `Runtime Target Lifecycle` 工作流为固定的已停用目标执行确定性预检和基于样本的 dry-run，并发布 `disabled` / `dry_run` 状态。若周期已完成，但风控检查使目标权重为空，视为成功完成无订单检查；预检或 dry-run 失败则报告为 `attention`。这些报告不会修改目标设置、建立券商连接或提交订单。
+当前允许清单为空，保留的行业 ETF 目标会在预检失败并报告为 `attention`。工作日运行的 `Runtime Target Lifecycle` 工作流为固定的已停用目标执行确定性预检和基于样本的 dry-run，并发布 `disabled` / `dry_run` 状态。若周期已完成，但风控检查使目标权重为空，视为成功完成无订单检查；预检或 dry-run 失败则报告为 `attention`。这些报告不会修改目标设置、建立券商连接或提交订单。
 
 ## HTTP 接口
 

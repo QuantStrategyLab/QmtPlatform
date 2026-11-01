@@ -10,28 +10,21 @@ from runtime_config_support import PlatformRuntimeSettings, load_platform_runtim
 from strategy_registry import QMT_PLATFORM, PLATFORM_POLICY, get_enabled_profiles_for_platform
 
 
-def test_qmt_enabled_profiles_include_primary_runtime_strategies():
-    profiles = get_enabled_profiles_for_platform(QMT_PLATFORM, policy=PLATFORM_POLICY)
-    assert profiles == frozenset(
-        {
-            CN_INDUSTRY_ETF_ROTATION_PROFILE,
-            CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE,
-        }
-    )
+def test_qmt_enabled_profiles_are_empty_after_retirement():
+    assert get_enabled_profiles_for_platform(QMT_PLATFORM, policy=PLATFORM_POLICY) == frozenset()
 
 
-def test_load_platform_runtime_settings_from_env(monkeypatch: pytest.MonkeyPatch, market_history_csv: str):
-    monkeypatch.setenv("STRATEGY_PROFILE", CN_INDUSTRY_ETF_ROTATION_PROFILE)
+@pytest.mark.parametrize("profile", [CN_INDUSTRY_ETF_ROTATION_PROFILE, CN_INDUSTRY_ETF_ROTATION_AGGRESSIVE_PROFILE])
+def test_load_platform_runtime_settings_rejects_retired_profiles(monkeypatch, market_history_csv, profile):
+    monkeypatch.setenv("STRATEGY_PROFILE", profile)
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
     monkeypatch.setenv("QMT_MARKET_HISTORY_PATH", market_history_csv)
     monkeypatch.delenv("RUNTIME_TARGET_JSON", raising=False)
-
-    settings = load_platform_runtime_settings()
-    assert settings.strategy_profile == CN_INDUSTRY_ETF_ROTATION_PROFILE
-    assert settings.dry_run_only is True
-    assert settings.market_history_path == market_history_csv
+    with pytest.raises(ValueError, match="Unsupported STRATEGY_PROFILE"):
+        load_platform_runtime_settings()
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_dry_run_cycle_fails_closed_on_concentrated_target(
     monkeypatch: pytest.MonkeyPatch,
     market_history_csv: str,
@@ -65,6 +58,7 @@ def test_dry_run_cycle_fails_closed_on_concentrated_target(
     assert report["dry_run_only"] is True
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_aggressive_industry_profile_fails_closed_on_concentration(
     monkeypatch: pytest.MonkeyPatch,
     market_history_csv: str,

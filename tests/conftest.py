@@ -36,3 +36,22 @@ def market_history_csv(tmp_path) -> str:
     path = tmp_path / "market_history.csv"
     frame.to_csv(path, index=False)
     return str(path)
+
+
+@pytest.fixture
+def historical_strategy_policy(monkeypatch):
+    """Exercise retained offline contracts under an explicit historical policy.
+
+    Opt in only for tests of risk/preflight behavior below profile selection.
+    Retirement entrypoint tests use the real empty policy.
+    """
+    from dataclasses import replace
+    import strategy_registry
+
+    monkeypatch.setattr(
+        strategy_registry,
+        "PLATFORM_POLICY",
+        replace(strategy_registry.PLATFORM_POLICY, enabled_profiles=frozenset({
+            "cn_industry_etf_rotation", "cn_industry_etf_rotation_aggressive",
+        })),
+    )

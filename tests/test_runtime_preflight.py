@@ -42,6 +42,7 @@ def _valid_e3_receipt() -> dict[str, object]:
     }
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_preflight_accepts_primary_dry_run_config(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
@@ -57,6 +58,7 @@ def test_preflight_accepts_primary_dry_run_config(monkeypatch, market_history_cs
     assert report.issues == ()
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_preflight_requires_market_history_for_direct_profile(monkeypatch):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
@@ -69,6 +71,7 @@ def test_preflight_requires_market_history_for_direct_profile(monkeypatch):
     assert _issue_codes(report) == {"missing_market_history"}
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_preflight_blocks_non_dry_run_config(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "false")
@@ -81,6 +84,7 @@ def test_preflight_blocks_non_dry_run_config(monkeypatch, market_history_csv: st
     assert _issue_codes(report) == {"non_dry_run_blocked"}
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_paper_admission_requires_paper_mode_and_a_frozen_input_digest(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
@@ -101,6 +105,7 @@ def test_paper_admission_requires_paper_mode_and_a_frozen_input_digest(monkeypat
     assert report.to_payload() == run_preflight(paper_admission=True).to_payload()
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_paper_admission_rejects_live_mode_and_non_dry_run(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "false")
@@ -120,6 +125,7 @@ def test_paper_admission_rejects_live_mode_and_non_dry_run(monkeypatch, market_h
     }
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_paper_admission_rejects_an_unfrozen_input(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
@@ -141,6 +147,7 @@ def test_preflight_cli_has_no_non_dry_run_bypass():
     assert exc_info.value.code == 2
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_preflight_cli_runs_offline_paper_admission(monkeypatch, market_history_csv: str):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")
@@ -224,6 +231,7 @@ def test_e3_receipt_validator_fails_closed_for_missing_required_fields():
     assert _issue_codes(report) == {"missing_receipt_fields", "verify_only_required"}
 
 
+@pytest.mark.usefixtures("historical_strategy_policy")
 def test_preflight_cli_validates_e3_receipt_offline(monkeypatch, market_history_csv: str, tmp_path, capsys):
     monkeypatch.setenv("STRATEGY_PROFILE", "cn_industry_etf_rotation")
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")

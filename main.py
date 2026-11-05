@@ -12,10 +12,6 @@ from application.qmt_client import QmtBrokerClient
 from runtime_config_support import load_platform_runtime_settings
 from strategy_registry import get_platform_profile_status_matrix
 
-app = Flask(__name__)
-
-
-@app.get("/probe")
 def probe():
     settings = load_platform_runtime_settings()
     return jsonify(
@@ -28,12 +24,10 @@ def probe():
     )
 
 
-@app.get("/profiles")
 def profiles():
     return jsonify({"profiles": get_platform_profile_status_matrix()})
 
 
-@app.route("/dry-run", methods=["GET", "POST"])
 def dry_run():
     settings = load_platform_runtime_settings()
     effective_settings = settings
@@ -53,6 +47,18 @@ def dry_run():
         return jsonify(report)
     except Exception as exc:
         return jsonify({"status": "error", "error": str(exc), "traceback": traceback.format_exc()}), 500
+
+
+def create_app() -> Flask:
+    """Construct an independent HTTP application with the existing handlers."""
+    application = Flask(__name__)
+    application.get("/probe")(probe)
+    application.get("/profiles")(profiles)
+    application.route("/dry-run", methods=["GET", "POST"])(dry_run)
+    return application
+
+
+app = create_app()
 
 
 if __name__ == "__main__":

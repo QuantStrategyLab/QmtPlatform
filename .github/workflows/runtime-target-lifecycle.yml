@@ -3,9 +3,7 @@ name: Runtime Target Lifecycle
 on:
   workflow_dispatch:
   schedule:
-    # QMT has no configured broker runtime. One weekday no-order validation is
-    # sufficient for this daily strategy family and avoids pretending it has a
-    # continuously running execution service.
+    # Publish the intentional retirement state without invoking a strategy.
     - cron: "17 22 * * 1-5"
 
 concurrency:
@@ -22,9 +20,6 @@ jobs:
     timeout-minutes: 15
     env:
       EXECUTION_EVIDENCE_SYNC_URL: ${{ vars.EXECUTION_EVIDENCE_SYNC_URL }}
-      QMT_DRY_RUN_ONLY: "true"
-      QMT_MARKET_HISTORY_PATH: data/fixtures/market_history.sample.csv
-      STRATEGY_PROFILE: cn_industry_etf_rotation
     steps:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -69,27 +64,15 @@ jobs:
           python -m pip install -e .
           python -m pip install --no-deps -e external/QuantPlatformKit -e external/CnEquityStrategies
 
-      - name: Validate disabled dry-run target
+      - name: Verify the QMT strategy rollout remains empty
         id: validation
         run: |
-          set -euo pipefail
-          python scripts/preflight_qmt_runtime.py
-          # Exit 2 from this smoke means the cycle itself completed but the
-          # deterministic risk gate kept target weights empty. That is an
-          # expected no-order outcome for a disabled target, not a runtime
-          # failure. Exit 1 still means the dry-run did not complete.
-          set +e
-          python scripts/smoke_cn_industry_etf_rotation_dry_run_e2e.py
-          smoke_status="$?"
-          set -e
-          if [ "$smoke_status" -eq 0 ]; then
-            exit 0
-          fi
-          if [ "$smoke_status" -eq 2 ]; then
-            echo "Dry-run completed with target weights safely blocked by the risk gate."
-            exit 0
-          fi
-          exit "$smoke_status"
+          python - <<'PYCODE'
+          from strategy_registry import get_supported_profiles_for_platform
+          if get_supported_profiles_for_platform("qmt"):
+              raise SystemExit("QMT retirement policy changed; review the lifecycle publisher")
+          print("QMT has no enabled strategy profiles")
+          PYCODE
 
       - name: Map validation to shared lifecycle checks
         if: ${{ always() }}

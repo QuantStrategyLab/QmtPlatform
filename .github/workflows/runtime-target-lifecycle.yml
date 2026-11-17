@@ -92,7 +92,7 @@ jobs:
 
       - name: Publish target lifecycle snapshot
         if: ${{ always() }}
-        uses: QuantStrategyLab/QuantRuntimeSettings/actions/publish-runtime-target-lifecycle@fbda8d84f3b7272963cc4ee538e58410b6e05ae9
+        uses: QuantStrategyLab/QuantRuntimeSettings/actions/publish-runtime-target-lifecycle@d7fa9874f6d9805d67b1d656e4f489eccabd39cc
         with:
           source-id: qmt.runtime-target-lifecycle
           target-id: qmt.cn_industry_etf_rotation

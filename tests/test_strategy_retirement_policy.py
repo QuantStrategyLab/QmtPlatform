@@ -3,8 +3,8 @@
 import pytest
 
 from cn_equity_strategies import get_platform_runtime_adapter, get_strategy_catalog
-from strategy_loader import load_strategy_definition
-from strategy_registry import get_supported_profiles_for_platform, resolve_strategy_definition
+from qmt_platform.strategy_loader import load_strategy_definition
+from qmt_platform.strategy_registry import get_supported_profiles_for_platform, resolve_strategy_definition
 
 
 RETIRED_PROFILES = ('cn_industry_etf_rotation', 'cn_industry_etf_rotation_aggressive')
@@ -38,7 +38,7 @@ def test_retired_profile_history_and_adapters_remain_available(profile):
 
 @pytest.mark.parametrize("profile", RETIRED_PROFILES)
 def test_preflight_rejects_retired_profiles(monkeypatch, profile):
-    from runtime_preflight import run_preflight
+    from qmt_platform.runtime_preflight import run_preflight
 
     monkeypatch.setenv("STRATEGY_PROFILE", profile)
     monkeypatch.setenv("QMT_DRY_RUN_ONLY", "true")

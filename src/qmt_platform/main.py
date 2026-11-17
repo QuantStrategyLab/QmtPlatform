@@ -7,10 +7,10 @@ import traceback
 
 from flask import Flask, jsonify
 
-from application.dry_run_service import run_dry_run_cycle
-from application.qmt_client import QmtBrokerClient
-from runtime_config_support import load_platform_runtime_settings
-from strategy_registry import get_platform_profile_status_matrix
+from qmt_platform.application.dry_run_service import run_dry_run_cycle
+from qmt_platform.application.qmt_client import QmtBrokerClient
+from qmt_platform.runtime_config_support import load_platform_runtime_settings
+from qmt_platform.strategy_registry import get_platform_profile_status_matrix
 
 app = Flask(__name__)
 

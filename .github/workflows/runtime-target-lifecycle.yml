@@ -68,7 +68,7 @@ jobs:
         id: validation
         run: |
           python - <<'PYCODE'
-          from strategy_registry import get_supported_profiles_for_platform
+          from qmt_platform.strategy_registry import get_supported_profiles_for_platform
           if get_supported_profiles_for_platform("qmt"):
               raise SystemExit("QMT retirement policy changed; review the lifecycle publisher")
           print("QMT has no enabled strategy profiles")

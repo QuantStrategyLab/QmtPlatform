@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from runtime_preflight import (
+from qmt_platform.runtime_preflight import (
     E3_RECEIPT_MAX_FRESHNESS_SECONDS,
     E3_RECEIPT_SCHEMA_VERSION,
     run_preflight,

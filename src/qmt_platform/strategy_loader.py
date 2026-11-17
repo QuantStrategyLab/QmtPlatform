@@ -7,7 +7,7 @@ from quant_platform_kit.common.strategy_contracts import (
 )
 from cn_equity_strategies import get_platform_runtime_adapter
 
-from strategy_registry import QMT_PLATFORM, resolve_strategy_definition
+from qmt_platform.strategy_registry import QMT_PLATFORM, resolve_strategy_definition
 
 
 def load_strategy_definition(raw_profile: str | None) -> StrategyDefinition:

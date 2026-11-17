@@ -7,7 +7,7 @@ from pathlib import Path
 from quant_platform_kit.common.runtime_config import resolve_bool_value, resolve_strategy_runtime_path_settings
 from quant_platform_kit.common.runtime_target import RuntimeTarget, build_runtime_target, resolve_runtime_target_from_env
 
-from strategy_registry import QMT_PLATFORM, resolve_strategy_definition, resolve_strategy_metadata
+from qmt_platform.strategy_registry import QMT_PLATFORM, resolve_strategy_definition, resolve_strategy_metadata
 from cn_equity_strategies import get_strategy_catalog
 
 
@@ -34,7 +34,7 @@ def load_platform_runtime_settings() -> PlatformRuntimeSettings:
         strategy_metadata=strategy_metadata,
         platform_env_prefix="QMT",
         env=os.environ,
-        repo_root=Path(__file__).resolve().parent,
+        repo_root=Path(__file__).resolve().parents[2],
     )
     return PlatformRuntimeSettings(
         strategy_profile=runtime_paths.strategy_profile,

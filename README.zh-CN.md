@@ -24,7 +24,7 @@ QmtPlatform 提供 QMT 平台集成层。它从 `CnEquityStrategies` 加载策�
 python3 -m pip install -e '.[test]'
 python3 -m pytest -q tests
 
-python3 main.py
+python3 -m qmt_platform.main
 ```
 
 通过 `GET /profiles` 查看已停用的历史策略。目前没有策略能通过预检或运行 `/dry-run`；保留的行业 ETF smoke 脚本也会因策略退役而拒绝运行。
@@ -81,14 +81,18 @@ python3 scripts/preflight_qmt_runtime.py --paper-admission
 - [CnEquitySnapshotPipelines](https://github.com/QuantStrategyLab/CnEquitySnapshotPipelines)
 - [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings)
 
+## 架构
+
+`qmt_platform.main` 提供 Flask HTTP 接口；`runtime_config_support`、`runtime_preflight` 与 `strategy_*` 解析运行配置、校验 dry-run 与离线 paper-admission 边界，并基于 `CnEquityStrategies` 和 `QuantPlatformKit` 执行策略退役检查。`qmt_platform.application` 运行离线 dry-run 周期并包含 `QmtBrokerClient`，后者构造模拟投资组合快照并对非 dry-run 请求返回 `blocked`。
+
 ## 仓库结构
 
 ```text
-application/    离线券商适配器和 dry-run 周期
-data/fixtures/  历史行情和快照样本输入
-scripts/        预检和本地 smoke 命令
-tests/          自动化测试
-main.py         Flask HTTP 入口
+src/qmt_platform/              QMT 平台包（HTTP 入口、预检与策略运行层）
+src/qmt_platform/application/  离线券商适配器和 dry-run 周期
+data/fixtures/                 历史行情和快照样本输入
+scripts/                       预检和本地 smoke 命令
+tests/                         自动化测试
 ```
 
 ## 参与贡献

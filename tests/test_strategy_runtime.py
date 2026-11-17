@@ -9,8 +9,8 @@ from quant_platform_kit.common.strategy_contracts import (
     StrategyManifest,
     StrategyRuntimeAdapter,
 )
-from runtime_config_support import PlatformRuntimeSettings
-import strategy_runtime as strategy_runtime_module
+from qmt_platform.runtime_config_support import PlatformRuntimeSettings
+import qmt_platform.strategy_runtime as strategy_runtime_module
 
 
 def _runtime_settings() -> PlatformRuntimeSettings:

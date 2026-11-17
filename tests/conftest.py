@@ -46,7 +46,7 @@ def historical_strategy_policy(monkeypatch):
     Retirement entrypoint tests use the real empty policy.
     """
     from dataclasses import replace
-    import strategy_registry
+    from qmt_platform import strategy_registry
 
     monkeypatch.setattr(
         strategy_registry,

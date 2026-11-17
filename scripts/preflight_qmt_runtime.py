@@ -7,10 +7,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
-from runtime_preflight import run_preflight, validate_e3_receipt  # noqa: E402
+from qmt_platform.runtime_preflight import run_preflight, validate_e3_receipt  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:

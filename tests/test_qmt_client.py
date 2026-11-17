@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from application.qmt_client import QmtBrokerClient
+from qmt_platform.application.qmt_client import QmtBrokerClient
 from quant_platform_kit.common.models import OrderIntent
 
 

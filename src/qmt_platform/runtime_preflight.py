@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from runtime_config_support import PlatformRuntimeSettings, load_platform_runtime_settings
-from strategy_loader import load_strategy_entrypoint_for_profile
+from qmt_platform.runtime_config_support import PlatformRuntimeSettings, load_platform_runtime_settings
+from qmt_platform.strategy_loader import load_strategy_entrypoint_for_profile
 
 
 E3_RECEIPT_SCHEMA_VERSION = "qmt.e3.receipt.v1"

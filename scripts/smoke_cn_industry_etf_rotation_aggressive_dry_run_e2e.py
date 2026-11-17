@@ -25,10 +25,11 @@ def main(argv: list[str] | None = None) -> int:
     os.environ["QMT_DRY_RUN_ONLY"] = "true"
     os.environ["QMT_MARKET_HISTORY_PATH"] = str(args.market_history)
 
-    if str(ROOT) not in sys.path:
-        sys.path.insert(0, str(ROOT))
-    from application.dry_run_service import run_dry_run_cycle
-    from runtime_config_support import load_platform_runtime_settings
+    src = ROOT / "src"
+    if str(src) not in sys.path:
+        sys.path.insert(0, str(src))
+    from qmt_platform.application.dry_run_service import run_dry_run_cycle
+    from qmt_platform.runtime_config_support import load_platform_runtime_settings
 
     report = run_dry_run_cycle(runtime_settings=load_platform_runtime_settings())
     print(json.dumps(report, ensure_ascii=False, indent=2, default=str))

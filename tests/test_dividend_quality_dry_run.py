@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from strategy_registry import QMT_PLATFORM, resolve_strategy_definition
+from qmt_platform.strategy_registry import QMT_PLATFORM, resolve_strategy_definition
 
 
 def test_dividend_quality_snapshot_is_research_only_for_qmt_runtime():

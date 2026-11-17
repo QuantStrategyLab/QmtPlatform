@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from main import app
+from qmt_platform.main import app
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def test_dry_run_endpoint(client, historical_strategy_policy):
 
 
 def test_retired_profile_cannot_run_through_http(client, monkeypatch):
-    import main
+    from qmt_platform import main
 
     def unexpected_cycle(**kwargs):
         pytest.fail("Retired profile reached the strategy cycle")

@@ -1,0 +1,1 @@
+"""QuantStrategyLab QMT platform package."""

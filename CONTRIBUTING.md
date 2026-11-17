@@ -25,7 +25,7 @@ python3 -m pip install -e '.[test]'
 python3 -m pip install --no-deps -e ../QuantPlatformKit ../CnEquityStrategies
 
 python3 -m ruff check .
-PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests
+PYTHONPATH=src:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests
 ```
 
 For changes touching the QMT runtime guards or strategy profiles, also run the relevant dry-run preflight and smoke scripts, e.g.:

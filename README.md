@@ -24,7 +24,7 @@ Requirements: Python 3.11 or later and Git. Run these commands from the reposito
 python3 -m pip install -e '.[test]'
 python3 -m pytest -q tests
 
-python3 main.py
+python3 -m qmt_platform.main
 ```
 
 Query `GET /profiles` to inspect the disabled historical profiles. No profile can currently pass preflight or run through `/dry-run`. The retained industry ETF smoke scripts reject their retired profiles under this policy.
@@ -81,14 +81,18 @@ With the current empty allowlist, the retained industry ETF target fails preflig
 - [CnEquitySnapshotPipelines](https://github.com/QuantStrategyLab/CnEquitySnapshotPipelines)
 - [QuantRuntimeSettings](https://github.com/QuantStrategyLab/QuantRuntimeSettings)
 
+## Architecture
+
+`qmt_platform.main` serves the Flask HTTP endpoints, while `runtime_config_support`, `runtime_preflight`, and `strategy_*` resolve runtime configuration, validate dry-run and paper-admission boundaries, and enforce strategy retirement against `CnEquityStrategies` and `QuantPlatformKit`. `qmt_platform.application` executes offline dry-run cycles and holds `QmtBrokerClient`, which builds synthetic portfolio snapshots and returns `blocked` for non-dry-run submissions.
+
 ## Repository layout
 
 ```text
-application/    offline broker adapter and dry-run cycle
-data/fixtures/  sample market-history and snapshot inputs
-scripts/        preflight and local smoke commands
-tests/          automated tests
-main.py         Flask HTTP entrypoint
+src/qmt_platform/              QMT platform package (HTTP entrypoint, preflight, strategy runtime)
+src/qmt_platform/application/  offline broker adapter and dry-run cycle
+data/fixtures/                 sample market-history and snapshot inputs
+scripts/                       preflight and local smoke commands
+tests/                         automated tests
 ```
 
 ## Contributing

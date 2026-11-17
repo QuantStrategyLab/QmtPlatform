@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from application.qmt_client import QmtBrokerClient
 from quant_platform_kit.common.execution_outcomes import resolve_strategy_run_stage
 from quant_platform_kit.common.strategy_contracts import PositionTarget
-from runtime_config_support import PlatformRuntimeSettings
-from strategy_runtime import load_strategy_runtime
+
+from qmt_platform.application.qmt_client import QmtBrokerClient
+from qmt_platform.runtime_config_support import PlatformRuntimeSettings
+from qmt_platform.strategy_runtime import load_strategy_runtime
 
 
 def _weights_from_decision(decision) -> dict[str, float]:

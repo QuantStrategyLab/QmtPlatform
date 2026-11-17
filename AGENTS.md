@@ -16,9 +16,8 @@ CnEquityStrategies at pinned revisions.
 
 ## Layout
 
-- `application/` — execution, admission and preflight logic.
-- `main.py`, `runtime_preflight.py` — entry points and guard.
-- `strategy/` — strategy loading and registry.
+- `src/qmt_platform/` — QMT platform package (`main.py`, `runtime_preflight.py`, `runtime_config_support.py`, `strategy_*.py`).
+- `src/qmt_platform/application/` — offline broker adapter and dry-run cycle.
 - `scripts/` — dry-run smoke and preflight tooling.
 - `data/fixtures/` — tracked sample inputs; other data paths are ignored.
 - `tests/` — offline dry-run and admission tests.
@@ -31,7 +30,7 @@ the CI-only setup steps.
 ```bash
 python3 -m pip install -e '.[test]' 'ruff==0.15.22'
 python3 -m ruff check . --extend-exclude external
-PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests
+PYTHONPATH=src:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests
 ```
 
 Runtime-guard changes also need the dry-run preflight and smoke scripts listed in
@@ -73,7 +72,7 @@ Organization documentation rules run in CI via `QuantStrategyLab/.github/.github
 
 ## Commits and pull requests
 
-- Use English Conventional Commits (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `ci`) with headers <= 72 chars; fill `.github/PULL_REQUEST_TEMPLATE.md` sections (`AI assistance`, `What changed`, `How verified`, `Why`, `Risk`) and avoid `risk:low`/`risk:high` drift from touched paths.
+- Use English Conventional Commits (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`) with headers <= 72 chars; fill `.github/PULL_REQUEST_TEMPLATE.md` sections (`AI assistance`, `What changed`, `How verified`, `Why`, `Risk`) and avoid `risk:low`/`risk:high` drift from touched paths.
 - R2 paths require green CI, `ai-review` on the exact head SHA, and one clearing label (`agent-approved` after checks pass, or `owner-approved` only on explicit owner confirmation; never add/remove `owner-approved` yourself).
 - Never push directly to `main`, force-push reviewed branches, lower branch protection, or use `gh pr merge --admin`; merge strictly through normal checks.
 ## Scope and authorization

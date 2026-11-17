@@ -60,4 +60,4 @@ jobs:
         run: python -m ruff check . --extend-exclude external
 
       - name: Run tests
-        run: PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests
+        run: PYTHONPATH=src:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests
